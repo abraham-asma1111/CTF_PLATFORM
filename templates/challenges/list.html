@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Challenges - CTF Platform{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <h1 class="card-title">🎯 Challenges</h1>
+    <p>Choose your challenge and capture the flag!</p>
+  </div>
+</div>
+
+<div class="challenge-grid">
+  {% for challenge in challenges %}
+  <div class="challenge-card">
+    <div class="challenge-meta">
+      <span class="difficulty-badge difficulty-{{ challenge.difficulty }}">
+        {{ challenge.get_difficulty_display }}
+      </span>
+      <span class="points-badge">{{ challenge.points }} pts</span>
+      {% if challenge.id in user_solved %}
+      <span class="solved-badge">✓ Solved</span>
+      {% endif %}
+    </div>
+
+    <h3>{{ challenge.title }}</h3>
+    <p class="challenge-category">{{ challenge.get_category_display }}</p>
+    <p class="challenge-description">{{ challenge.description|truncatewords:20 }}</p>
+
+    <div style="margin-top: 1rem;">
+      {% if user.is_authenticated %}
+      <a href="{% url 'challenges:detail' challenge.id %}" class="btn btn-primary">
+        {% if challenge.id in user_solved %}
+        View Solution
+        {% else %}
+        Solve Challenge
+        {% endif %}
+      </a>
+      {% else %}
+      <a href="{% url 'users:login' %}" class="btn btn-secondary">Login to Solve</a>
+      {% endif %}
+    </div>
+  </div>
+  {% empty %}
+  <div class="card">
+    <p>No challenges available at the moment. Check back later!</p>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

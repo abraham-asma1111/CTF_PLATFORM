@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile - CTF Platform{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <h1 class="card-title">👤 {{ user.username }}'s Profile</h1>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-number">{{ profile.total_score }}</span>
+      <span class="stat-label">Total Points</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">{{ profile.challenges_solved }}</span>
+      <span class="stat-label">Challenges Solved</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">
+        {% if profile.last_submission %}
+        {{ profile.last_submission|date:"M d, Y" }}
+        {% else %}
+        Never
+        {% endif %}
+      </span>
+      <span class="stat-label">Last Submission</span>
+    </div>
+  </div>
+</div>
+
+{% if solved_challenges %}
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">🏆 Solved Challenges</h2>
+  </div>
+
+  <div class="challenge-grid">
+    {% for submission in solved_challenges %}
+    <div class="challenge-card">
+      <div class="challenge-meta">
+        <span class="difficulty-badge difficulty-{{ submission.challenge.difficulty }}">
+          {{ submission.challenge.get_difficulty_display }}
+        </span>
+        <span class="points-badge">{{ submission.challenge.points }} pts</span>
+        <span class="solved-badge">✓ Solved</span>
+      </div>
+
+      <h3>{{ submission.challenge.title }}</h3>
+      <p class="challenge-category">{{ submission.challenge.get_category_display }}</p>
+      <p><small>Solved on {{ submission.timestamp|date:"M d, Y H:i" }}</small></p>
+
+      <div style="margin-top: 1rem;">
+        <a href="{% url 'challenges:detail' submission.challenge.id %}" class="btn btn-secondary">
+          View Challenge
+        </a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% else %}
+<div class="card">
+  <h2>No Challenges Solved Yet</h2>
+  <p>Start solving challenges to see your progress here!</p>
+  <a href="{% url 'challenges:list' %}" class="btn btn-primary">View Challenges</a>
+</div>
+{% endif %}
+{% endblock %}

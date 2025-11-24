@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}Leaderboard - CTF Platform{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <h1 class="card-title">🏆 Leaderboard</h1>
+    <p>Top performers in the CTF competition</p>
+  </div>
+
+  {% if top_users %}
+  <table class="leaderboard-table" id="leaderboard-table">
+    <thead>
+      <tr>
+        <th>Rank</th>
+        <th>Username</th>
+        <th>Score</th>
+        <th>Challenges Solved</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for profile in top_users %}
+      <tr>
+        <td>
+          {% if forloop.counter == 1 %}🥇
+          {% elif forloop.counter == 2 %}🥈
+          {% elif forloop.counter == 3 %}🥉
+          {% else %}{{ forloop.counter }}
+          {% endif %}
+        </td>
+        <td>{{ profile.user.username }}</td>
+        <td>{{ profile.total_score }}</td>
+        <td>{{ profile.challenges_solved }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div style="text-align: center; padding: 2rem;">
+    <p>No scores yet. Be the first to solve a challenge!</p>
+    <a href="{% url 'challenges:list' %}" class="btn btn-primary">View Challenges</a>
+  </div>
+  {% endif %}
+</div>
+
+<div class="card">
+  <h2>🔄 Live Updates</h2>
+  <p>The leaderboard updates automatically every 30 seconds to show the latest rankings.</p>
+
+  {% if user.is_authenticated %}
+  <p><strong>Your current rank:</strong>
+    {% for profile in top_users %}
+    {% if profile.user == user %}
+    #{{ forloop.counter }}
+    {% endif %}
+    {% empty %}
+    Not ranked yet - solve some challenges to appear on the leaderboard!
+    {% endfor %}
+  </p>
+  {% endif %}
+</div>
+{% endblock %}

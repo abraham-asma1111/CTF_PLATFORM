@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - CTF Platform{% endblock %}
+
+{% block content %}
+<!-- Hero Section with Terminal Animation -->
+<div class="hero-section">
+  <!-- Animated CTF Image Gallery Embedded at Top -->
+  <div class="carousel-embedded">
+    <div class="image-carousel-container">
+      <div class="image-carousel" id="imageCarousel">
+        <div class="carousel-image active" style="background-image: url('/static/images/ctf-hero-1.png')"></div>
+        <div class="carousel-image" style="background-image: url('/static/images/blog-ctf-2.png')"></div>
+        <div class="carousel-image" style="background-image: url('/static/images/blog-ctf-3.png')"></div>
+        <div class="carousel-image" style="background-image: url('/static/images/blog-ctf-4.png')"></div>
+        <div class="carousel-image" style="background-image: url('/static/images/blog-ctf-5.png')"></div>
+        <div class="carousel-image" style="background-image: url('/static/images/blog-ctf-6.png')"></div>
+        <div class="carousel-image" style="background-image: url('/static/images/blog-ctf-7.png')"></div>
+        <div class="carousel-image" style="background-image: url('/static/images/blog-ctf-8.png')"></div>
+      </div>
+
+      <div class="carousel-nav">
+        <button class="nav-btn prev" onclick="prevImage()">❮</button>
+        <button class="nav-btn next" onclick="nextImage()">❯</button>
+      </div>
+
+      <div class="carousel-dots" id="carouselDots"></div>
+    </div>
+  </div>
+  <div class="terminal-container">
+    <div class="terminal-header">
+      <div class="terminal-buttons">
+        <span class="terminal-btn red"></span>
+        <span class="terminal-btn yellow"></span>
+        <span class="terminal-btn green"></span>
+      </div>
+      <span class="terminal-title">root@ctf-platform:~$</span>
+    </div>
+    <div class="terminal-body">
+      <div class="terminal-line">
+        <span class="prompt">root@ctf-platform:~$</span>
+        <span class="command typing-animation">./start_hacking.sh</span>
+      </div>
+      <div class="terminal-output">
+        <div class="output-line">🚩 Initializing CTF Platform...</div>
+        <div class="output-line">🔐 Loading {{ total_challenges }} challenges...</div>
+        <div class="output-line">⚡ System ready for penetration testing</div>
+        <div class="output-line success">✅ Welcome to the matrix, hacker!</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-content">
+    <div class="hero-visual">
+      <div class="cyber-hacker-scene">
+        <div class="hacker-silhouette">
+          <div class="screen-glow"></div>
+          <div class="code-lines">
+            <div class="code-line"></div>
+            <div class="code-line"></div>
+            <div class="code-line"></div>
+            <div class="code-line"></div>
+          </div>
+        </div>
+        <div class="floating-icons">
+          <div class="icon-item">🔐</div>
+          <div class="icon-item">💻</div>
+          <div class="icon-item">🌐</div>
+          <div class="icon-item">⚡</div>
+          <div class="icon-item">🔍</div>
+        </div>
+      </div>
+    </div>
+
+    <h1 class="hero-title">
+      <span class="glitch" data-text="HACK THE SYSTEM">HACK THE SYSTEM</span>
+    </h1>
+    <p class="hero-subtitle">Master cybersecurity through hands-on challenges</p>
+    <div class="hero-buttons">
+      {% if user.is_authenticated %}
+      <a href="{% url 'challenges:list' %}" class="btn btn-hack">START HACKING</a>
+      <a href="{% url 'leaderboard:leaderboard' %}" class="btn btn-secondary">VIEW RANKINGS</a>
+      {% else %}
+      <a href="{% url 'users:register' %}" class="btn btn-hack">JOIN THE ELITE</a>
+      <a href="{% url 'users:login' %}" class="btn btn-secondary">ACCESS GRANTED</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Stats Grid with Animations -->
+<div class="cyber-stats">
+  <div class="stat-card-cyber" data-aos="fade-up" data-aos-delay="100">
+    <div class="stat-icon">🎯</div>
+    <span class="stat-number-cyber" data-target="{{ total_challenges }}">0</span>
+    <span class="stat-label-cyber">Active Targets</span>
+  </div>
+  <div class="stat-card-cyber" data-aos="fade-up" data-aos-delay="200">
+    <div class="stat-icon">🔥</div>
+    <span class="stat-number-cyber" data-target="6">0</span>
+    <span class="stat-label-cyber">Attack Vectors</span>
+  </div>
+  <div class="stat-card-cyber" data-aos="fade-up" data-aos-delay="300">
+    <div class="stat-icon">⚡</div>
+    <span class="stat-number-cyber" data-target="3">0</span>
+    <span class="stat-label-cyber">Skill Levels</span>
+  </div>
+</div>
+
+<!-- Animated CTF Image Gallery -->
+<div class="ctf-gallery-section">
+  <h2 class="gallery-title">
+    <span class="cyber-bracket">[</span>
+    CTF SHOWCASE
+    <span class="cyber-bracket">]</span>
+  </h2>
+
+  <div class="image-carousel-container">
+    <div class="image-carousel" id="imageCarousel">
+      <div class="carousel-image active" style="background-image: url('/static/images/ctf-hero-1.png')"></div>
+      <div class="carousel-image" style="background-image: url('/static/images/blog-ctf-2.png')"></div>
+      <div class="carousel-image" style="background-image: url('/static/images/blog-ctf-3.png')"></div>
+      <div class="carousel-image" style="background-image: url('/static/images/blog-ctf-4.png')"></div>
+      <div class="carousel-image" style="background-image: url('/static/images/blog-ctf-5.png')"></div>
+      <div class="carousel-image" style="background-image: url('/static/images/blog-ctf-6.png')"></div>
+      <div class="carousel-image" style="background-image: url('/static/images/blog-ctf-7.png')"></div>
+      <div class="carousel-image" style="background-image: url('/static/images/blog-ctf-8.png')"></div>
+    </div>
+
+    <div class="carousel-nav">
+      <button class="nav-btn prev" onclick="prevImage()">❮</button>
+      <button class="nav-btn next" onclick="nextImage()">❯</button>
+    </div>
+
+    <div class="carousel-dots" id="carouselDots"></div>
+  </div>
+</div>
+
+<!-- Attack Vectors Section -->
+<div class="attack-vectors">
+  <div class="section-header">
+    <h2 class="cyber-title">
+      <span class="cyber-bracket">[</span>
+      ATTACK VECTORS
+      <span class="cyber-bracket">]</span>
+    </h2>
+    <div class="cyber-line"></div>
+  </div>
+
+  <p class="section-description">
+    Master the art of ethical hacking through our comprehensive challenge categories.
+    Each vector represents a different aspect of cybersecurity warfare.
+  </p>
+
+  <div class="vectors-grid">
+    <div class="vector-card" data-aos="zoom-in" data-aos-delay="100">
+      <div class="vector-icon">🌐</div>
+      <h3 class="vector-title">WEB EXPLOITATION</h3>
+      <p class="vector-desc">Penetrate web applications and exploit vulnerabilities</p>
+      <div class="vector-progress">
+        <div class="progress-bar" data-width="85"></div>
+      </div>
+    </div>
+
+    <div class="vector-card" data-aos="zoom-in" data-aos-delay="200">
+      <div class="vector-icon">🔐</div>
+      <h3 class="vector-title">CRYPTOGRAPHY</h3>
+      <p class="vector-desc">Break encryption and decode secret messages</p>
+      <div class="vector-progress">
+        <div class="progress-bar" data-width="70"></div>
+      </div>
+    </div>
+
+    <div class="vector-card" data-aos="zoom-in" data-aos-delay="300">
+      <div class="vector-icon">🔍</div>
+      <h3 class="vector-title">DIGITAL FORENSICS</h3>
+      <p class="vector-desc">Investigate and recover hidden digital evidence</p>
+      <div class="vector-progress">
+        <div class="progress-bar" data-width="60"></div>
+      </div>
+    </div>
+
+    <div class="vector-card" data-aos="zoom-in" data-aos-delay="400">
+      <div class="vector-icon">💥</div>
+      <h3 class="vector-title">BINARY EXPLOITATION</h3>
+      <p class="vector-desc">Exploit memory corruption and buffer overflows</p>
+      <div class="vector-progress">
+        <div class="progress-bar" data-width="45"></div>
+      </div>
+    </div>
+
+    <div class="vector-card" data-aos="zoom-in" data-aos-delay="500">
+      <div class="vector-icon">🔧</div>
+      <h3 class="vector-title">REVERSE ENGINEERING</h3>
+      <p class="vector-desc">Disassemble and analyze compiled binaries</p>
+      <div class="vector-progress">
+        <div class="progress-bar" data-width="55"></div>
+      </div>
+    </div>
+
+    <div class="vector-card" data-aos="zoom-in" data-aos-delay="600">
+      <div class="vector-icon">🎭</div>
+      <h3 class="vector-title">MISCELLANEOUS</h3>
+      <p class="vector-desc">Unique challenges that test creative thinking</p>
+      <div class="vector-progress">
+        <div class="progress-bar" data-width="75"></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

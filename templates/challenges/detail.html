@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ challenge.title }} - CTF Platform{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <div class="challenge-meta">
+      <h1 class="card-title">{{ challenge.title }}</h1>
+      <div>
+        <span class="difficulty-badge difficulty-{{ challenge.difficulty }}">
+          {{ challenge.get_difficulty_display }}
+        </span>
+        <span class="points-badge">{{ challenge.points }} pts</span>
+        {% if user_solved %}
+        <span class="solved-badge">✓ Solved</span>
+        {% endif %}
+      </div>
+    </div>
+    <p><strong>Category:</strong> {{ challenge.get_category_display }}</p>
+  </div>
+
+  <div class="challenge-description">
+    <h3>Description</h3>
+    <p>{{ challenge.description|linebreaks }}</p>
+  </div>
+
+  {% if challenge.challenge_file %}
+  <div class="challenge-file" style="margin-top: 2rem; padding: 1rem; background: #f0f0f0; border-radius: 8px;">
+    <h3>📥 Challenge File</h3>
+    <p>Download the challenge file to get started:</p>
+    <a href="{% url 'challenges:download' challenge.id %}" class="btn btn-primary" style="margin-top: 0.5rem;">
+      ⬇️ Download File
+    </a>
+  </div>
+  {% endif %}
+
+  {% if not user_solved %}
+  <div class="flag-submission" style="margin-top: 2rem;">
+    <h3>Submit Flag</h3>
+    <div class="form-group">
+      <label for="flag-input" class="form-label">Flag:</label>
+      <input type="text" id="flag-input" class="form-control" placeholder="CTF{...}" autocomplete="off">
+    </div>
+    <button id="submit-btn" class="btn btn-primary" data-challenge-id="{{ challenge.id }}">
+      Submit Flag
+    </button>
+  </div>
+  {% else %}
+  <div class="solved-message" style="margin-top: 2rem;">
+    <div class="alert alert-success">
+      <strong>Congratulations!</strong> You have already solved this challenge and earned {{ challenge.points }} points!
+    </div>
+  </div>
+  {% endif %}
+
+  <div id="submission-result" style="margin-top: 1rem;"></div>
+</div>
+
+<div style="margin-top: 2rem;">
+  <a href="{% url 'challenges:list' %}" class="btn btn-secondary">← Back to Challenges</a>
+</div>
+{% endblock %}

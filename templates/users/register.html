@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block title %}Register - CTF Platform{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 0 auto;">
+  <div class="card-header">
+    <h1 class="card-title">🔐 Register</h1>
+    <p>Create your account to start solving challenges!</p>
+  </div>
+
+  <form method="post" id="registerForm">
+    {% csrf_token %}
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+      <div class="form-group">
+        <label for="id_first_name" class="form-label">First Name:</label>
+        <input type="text" name="first_name" id="id_first_name" class="form-control" required>
+      </div>
+
+      <div class="form-group">
+        <label for="id_last_name" class="form-label">Last Name:</label>
+        <input type="text" name="last_name" id="id_last_name" class="form-control" required>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="id_email" class="form-label">Email:</label>
+      <input type="email" name="email" id="id_email" class="form-control" required>
+    </div>
+
+    <div class="form-group">
+      <label for="{{ form.username.id_for_label }}" class="form-label">Username:</label>
+      <small style="color: #666; display: block; margin-bottom: 0.5rem;">Use letters (A-Z, a-z), numbers (0-9), and
+        underscores (_) only. No spaces or special characters.</small>
+      {{ form.username }}
+      {% if form.username.errors %}
+      <div class="alert alert-error">
+        {% for error in form.username.errors %}
+        <p>{{ error }}</p>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+      <div class="form-group">
+        <label for="{{ form.password1.id_for_label }}" class="form-label">Password:</label>
+        <div style="position: relative;">
+          {{ form.password1 }}
+          <span class="password-toggle" onclick="togglePassword('id_password1')"
+            style="position: absolute; right: 10px; top: 38px; cursor: pointer; font-size: 1.2rem;">👁️</span>
+        </div>
+        {% if form.password1.errors %}
+        <div class="alert alert-error">
+          {% for error in form.password1.errors %}
+          <p>{{ error }}</p>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="form-group">
+        <label for="{{ form.password2.id_for_label }}" class="form-label">Confirm Password:</label>
+        <div style="position: relative;">
+          {{ form.password2 }}
+          <span class="password-toggle" onclick="togglePassword('id_password2')"
+            style="position: absolute; right: 10px; top: 38px; cursor: pointer; font-size: 1.2rem;">👁️</span>
+        </div>
+        {% if form.password2.errors %}
+        <div class="alert alert-error">
+          {% for error in form.password2.errors %}
+          <p>{{ error }}</p>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+      <div class="form-group">
+        <label for="id_sex" class="form-label">Sex:</label>
+        <select name="sex" id="id_sex" class="form-control">
+          <option value="">-- Select --</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="id_education_level" class="form-label">Education Level:</label>
+        <select name="education_level" id="id_education_level" class="form-control" onchange="toggleDepartment()">
+          <option value="">-- Select --</option>
+          <option value="high_school">High School</option>
+          <option value="undergraduate">Undergraduate</option>
+          <option value="postgraduate">Postgraduate</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group" id="departmentGroup" style="display: none;">
+      <label for="id_department" class="form-label">Department:</label>
+      <select name="department" id="id_department" class="form-control">
+        <option value="">-- Select --</option>
+        <option value="cyber_security">Cyber Security</option>
+        <option value="software_engineering">Software Engineering</option>
+        <option value="computer_science">Computer Science</option>
+        <option value="it">Information Technology</option>
+      </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary" style="width: 100%;">Register</button>
+  </form>
+
+  <div style="text-align: center; margin-top: 1rem;">
+    <p>Already have an account? <a href="{% url 'users:login' %}">Login here</a></p>
+  </div>
+</div>
+
+<script>
+  function toggleDepartment() {
+    const educationLevel = document.getElementById('id_education_level').value;
+    const departmentGroup = document.getElementById('departmentGroup');
+
+    if (educationLevel === 'undergraduate' || educationLevel === 'postgraduate') {
+      departmentGroup.style.display = 'block';
+    } else {
+      departmentGroup.style.display = 'none';
+    }
+  }
+
+  function togglePassword(fieldId) {
+    const field = document.getElementById(fieldId);
+    const icon = event.target;
+
+    if (field.type === 'password') {
+      field.type = 'text';
+      icon.textContent = '🙈';
+    } else {
+      field.type = 'password';
+      icon.textContent = '👁️';
+    }
+  }
+</script>
+{% endblock %}
