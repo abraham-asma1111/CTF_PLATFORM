@@ -70,20 +70,7 @@ Access the admin panel at `http://127.0.0.1:8000/admin/` to:
 - Add/edit challenges
 - View submissions
 - Manage users
-- Monitor platform activity
-
-## Sample Challenges
-
-The platform comes with 8 sample challenges across different categories:
-
-1. **Welcome to CTF** (Misc, 50 pts) - Easy
-2. **Basic Web Challenge** (Web, 100 pts) - Easy
-3. **Caesar Cipher** (Crypto, 75 pts) - Easy
-4. **SQL Injection** (Web, 200 pts) - Medium
-5. **Buffer Overflow** (Pwn, 300 pts) - Hard
-6. **Reverse Engineering** (Reverse, 250 pts) - Medium
-7. **Digital Forensics** (Forensics, 180 pts) - Medium
-8. **Advanced Crypto** (Crypto, 400 pts) - Hard
+- Monitor platform activits
 
 ## Architecture
 
