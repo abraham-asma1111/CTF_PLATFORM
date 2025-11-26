@@ -6,6 +6,7 @@ app_name = 'challenges'
 urlpatterns = [
     path('', views.challenge_list, name='list'),
     path('<int:challenge_id>/', views.challenge_detail, name='detail'),
+    path('<int:challenge_id>/admin/', views.admin_challenge_detail, name='admin_detail'),
     path('<int:challenge_id>/submit/', views.submit_flag, name='submit'),
     path('<int:challenge_id>/download/', views.download_challenge_file, name='download'),
 ]

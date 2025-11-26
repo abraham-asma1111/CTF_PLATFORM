@@ -4,6 +4,27 @@
 
 {% block content %}
 <div class="admin-dashboard-wrapper">
+  <!-- Admin Profile Photo - Above Dashboard -->
+  <div style="padding: 1rem 2rem; display: flex; align-items: center; gap: 1.5rem; margin-bottom: 0;">
+    <div onclick="openProfileModal()" style="cursor: pointer;">
+      {% if user.userprofile.profile_photo %}
+      <img src="{{ user.userprofile.profile_photo.url }}" alt="Admin Profile"
+        style="width: 75px; height: 75px; border-radius: 50%; object-fit: cover; border: 4px solid #FFD700; transition: transform 0.2s; box-shadow: 0 4px 12px rgba(255,215,0,0.5);"
+        onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+      {% else %}
+      <div
+        style="width: 75px; height: 75px; border-radius: 50%; background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; border: 4px solid #FFD700; transition: transform 0.2s; box-shadow: 0 4px 12px rgba(255,215,0,0.5);"
+        onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+        👤
+      </div>
+      {% endif %}
+    </div>
+    <div>
+      <h2 style="margin: 0; color: #FFD700; font-size: 1.5rem;">{{ user.first_name }} {{ user.last_name }}</h2>
+      <p style="margin: 0.25rem 0 0 0; color: #999;">👑 Administrator</p>
+    </div>
+  </div>
+
   <!-- Admin Header -->
   <div class="admin-header">
     <div class="admin-title">
@@ -188,6 +209,7 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2rem;
+    margin-top: 0em;
     padding: 2rem;
     background: rgba(0, 0, 0, 0.3);
     border-radius: 8px;
@@ -471,4 +493,68 @@
     }
   }
 </style>
+
+<!-- Profile Photo Modal -->
+<div id="profileModal"
+  style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 10000; justify-content: center; align-items: center;">
+  <div style="position: relative; max-width: 90%; max-height: 90%;">
+    <span onclick="closeProfileModal()"
+      style="position: absolute; top: -40px; right: 0; color: white; font-size: 2rem; cursor: pointer; font-weight: bold;">&times;</span>
+    {% if user.userprofile.profile_photo %}
+    <img src="{{ user.userprofile.profile_photo.url }}" alt="Admin Profile Photo"
+      style="max-width: 100%; max-height: 80vh; border-radius: 10px; border: 3px solid #FFD700;">
+    <div style="text-align: center; margin-top: 0rem;">
+      <h2 style="color: #FFD700; margin-bottom: 0.5rem;">{{ user.first_name }} {{ user.last_name }}</h2>
+      <p style="color: #FFD700; font-weight: bold;">👑 Administrator</p>
+      <p style="color: #00ff88;">@{{ user.username }}</p>
+      {% if user.userprofile.bio %}
+      <p style="color: #ccc; max-width: 600px; margin: 1rem auto;">{{ user.userprofile.bio }}</p>
+      {% endif %}
+      <a href="{% url 'users:edit_profile' %}" class="btn btn-primary"
+        style="margin-top: 1rem; display: inline-block; background: #FFD700; color: #000;">✏️ Edit Profile</a>
+    </div>
+    {% else %}
+    <div style="text-align: center; color: white;">
+      <div
+        style="width: 300px; height: 300px; border-radius: 50%; background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 10rem;">
+        👤
+      </div>
+      <h2 style="margin-top: 2rem; color: #FFD700;">{{ user.first_name }} {{ user.last_name }}</h2>
+      <p style="color: #FFD700; font-weight: bold;">👑 Administrator</p>
+      <p style="color: #00ff88;">@{{ user.username }}</p>
+      {% if user.userprofile.bio %}
+      <p style="color: #ccc; max-width: 600px; margin: 1rem auto;">{{ user.userprofile.bio }}</p>
+      {% endif %}
+      <a href="{% url 'users:edit_profile' %}" class="btn btn-primary"
+        style="margin-top: 1rem; display: inline-block; background: #FFD700; color: #000;">✏️ Upload Photo</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  function openProfileModal() {
+    const modal = document.getElementById('profileModal');
+    modal.style.display = 'flex';
+  }
+
+  function closeProfileModal() {
+    const modal = document.getElementById('profileModal');
+    modal.style.display = 'none';
+  }
+
+  // Close modal when clicking outside the image
+  document.getElementById('profileModal').addEventListener('click', function (e) {
+    if (e.target === this) {
+      closeProfileModal();
+    }
+  });
+
+  // Close modal with Escape key
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      closeProfileModal();
+    }
+  });
+</script>
 {% endblock %}

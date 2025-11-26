@@ -1,0 +1,234 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ challenge.title }} - Admin View - CTF Platform{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <div class="challenge-meta">
+      <h1 class="card-title">{{ challenge.title }}</h1>
+      <div>
+        <span class="difficulty-badge difficulty-{{ challenge.difficulty }}">
+          {{ challenge.get_difficulty_display }}
+        </span>
+        <span class="points-badge">{{ challenge.points }} pts</span>
+        {% if challenge.is_active %}
+        <span class="badge-active">Active</span>
+        {% else %}
+        <span class="badge-inactive">Inactive</span>
+        {% endif %}
+      </div>
+    </div>
+    <p><strong>Category:</strong> {{ challenge.get_category_display }}</p>
+  </div>
+
+  <!-- Challenge Info -->
+  <div class="admin-section">
+    <h3>📋 Challenge Information</h3>
+    <div class="info-grid">
+      <div class="info-item">
+        <span class="info-label">Title:</span>
+        <span class="info-value">{{ challenge.title }}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Category:</span>
+        <span class="info-value">{{ challenge.get_category_display }}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Difficulty:</span>
+        <span class="info-value">{{ challenge.get_difficulty_display }}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Points:</span>
+        <span class="info-value">{{ challenge.points }}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Status:</span>
+        <span class="info-value">
+          {% if challenge.is_active %}
+          <span style="color: #2ecc71;">Active</span>
+          {% else %}
+          <span style="color: #e74c3c;">Inactive</span>
+          {% endif %}
+        </span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Created:</span>
+        <span class="info-value">{{ challenge.created_at|date:"M d, Y H:i" }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Description -->
+  <div class="admin-section">
+    <h3>📝 Description</h3>
+    <div class="description-box">
+      {{ challenge.description|linebreaks }}
+    </div>
+  </div>
+
+  <!-- Challenge File -->
+  {% if challenge.challenge_file %}
+  <div class="admin-section">
+    <h3>📥 Challenge File</h3>
+    <div class="file-info">
+      <p><strong>File:</strong> {{ challenge.challenge_file.name }}</p>
+      <p><strong>Size:</strong> {{ challenge.challenge_file.size|filesizeformat }}</p>
+      <a href="{% url 'challenges:download' challenge.id %}" class="btn btn-primary">
+        ⬇️ Download File
+      </a>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Submission Statistics -->
+  <div class="admin-section">
+    <h3>📊 Submission Statistics</h3>
+    <div class="stats-box">
+      <div class="stat-item">
+        <span class="stat-label">Total Submissions:</span>
+        <span class="stat-value">{{ total_submissions }}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Correct Submissions:</span>
+        <span class="stat-value" style="color: #2ecc71;">{{ correct_submissions }}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Success Rate:</span>
+        <span class="stat-value">
+          {% if total_submissions > 0 %}
+          {{ correct_submissions|add:"0" }}%
+          {% else %}
+          0%
+          {% endif %}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Actions -->
+  <div class="admin-section">
+    <h3>⚙️ Admin Actions</h3>
+    <div class="action-buttons">
+      <a href="/admin/challenges/challenge/{{ challenge.id }}/change/" class="btn btn-primary">
+        ✏️ Edit Challenge
+      </a>
+      <a href="{% url 'challenges:list' %}" class="btn btn-secondary">
+        ← Back to Challenges
+      </a>
+    </div>
+  </div>
+</div>
+
+<style>
+  .admin-section {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: rgba(0, 255, 136, 0.05);
+    border-left: 4px solid #00ff88;
+    border-radius: 4px;
+  }
+
+  .admin-section h3 {
+    color: #FFD700;
+    margin-top: 0;
+    margin-bottom: 1rem;
+  }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+
+  .info-item {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+  }
+
+  .info-label {
+    color: #FFD700;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  .info-value {
+    color: #fff;
+    font-size: 1.1rem;
+  }
+
+  .description-box {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 1rem;
+    border-radius: 4px;
+    line-height: 1.8;
+    color: #ccc;
+  }
+
+  .file-info {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 1rem;
+    border-radius: 4px;
+  }
+
+  .file-info p {
+    margin: 0.5rem 0;
+    color: #ccc;
+  }
+
+  .stats-box {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+
+  .stat-item {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 1rem;
+    border-radius: 4px;
+    text-align: center;
+  }
+
+  .stat-label {
+    display: block;
+    color: #999;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-value {
+    display: block;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #00ff88;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .badge-active {
+    background: #2ecc71;
+    color: #fff;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+  }
+
+  .badge-inactive {
+    background: #95a5a6;
+    color: #fff;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+  }
+</style>
+{% endblock %}

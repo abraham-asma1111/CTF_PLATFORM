@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from django.contrib import messages
 from .models import Challenge
 
 @admin.register(Challenge)
@@ -8,6 +9,7 @@ class ChallengeAdmin(admin.ModelAdmin):
     list_filter = ['category', 'difficulty', 'is_active', 'created_at']
     search_fields = ['title', 'description', 'flag']
     ordering = ['-created_at']
+    actions = ['make_active', 'make_inactive']
     
     fieldsets = (
         ('Challenge Information', {
@@ -80,3 +82,15 @@ class ChallengeAdmin(admin.ModelAdmin):
             # New challenge created
             pass
         super().save_model(request, obj, form, change)
+    
+    def make_active(self, request, queryset):
+        """Bulk action to activate challenges"""
+        updated = queryset.update(is_active=True)
+        self.message_user(request, f'{updated} challenge(s) activated and now visible to users.')
+    make_active.short_description = '✓ Activate selected challenges (make visible to users)'
+    
+    def make_inactive(self, request, queryset):
+        """Bulk action to deactivate challenges"""
+        updated = queryset.update(is_active=False)
+        self.message_user(request, f'{updated} challenge(s) deactivated and hidden from users.', messages.WARNING)
+    make_inactive.short_description = '✗ Deactivate selected challenges (hide from users)'

@@ -26,8 +26,36 @@
 
     <div class="form-group">
       <label for="id_email" class="form-label">Email:</label>
-      <input type="email" name="email" id="id_email" class="form-control" required>
+      <input type="email" name="email" id="id_email" class="form-control" required value="{{ email }}">
     </div>
+
+    {% if show_verification %}
+    <div class="form-group" id="verificationSection">
+      <label for="id_verification_code" class="form-label">Verification Code:</label>
+      <div
+        style="background: rgba(0, 255, 136, 0.1); border: 1px solid #00ff88; border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
+        <p style="color: #00ff88; font-size: 0.9rem; margin: 0 0 0.5rem 0;">
+          📧 A 6-digit verification code has been sent to <strong>{{ email }}</strong>
+        </p>
+        <p style="color: #ff6b6b; font-size: 0.9rem; margin: 0 0 0.5rem 0; font-weight: bold;">
+          ⏱️ Code expires in: <span id="countdown">60</span> seconds
+        </p>
+        <p style="color: #999; font-size: 0.85rem; margin: 0;">
+          💡 <strong>Development Mode:</strong> Check your browser console or terminal for the code if email is not
+          received.
+        </p>
+      </div>
+      <div style="display: flex; gap: 0.5rem;">
+        <input type="text" name="verification_code" id="id_verification_code" class="form-control" placeholder="000000"
+          maxlength="6" pattern="[0-9]{6}" required style="flex: 1;">
+        <button type="button" class="btn btn-primary" id="resendBtn" onclick="resendCode()"
+          style="white-space: nowrap;">Resend
+          Code</button>
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary" id="verifyBtn" style="width: 100%; margin-bottom: 1rem;">Verify
+      Email</button>
+    {% else %}
 
     <div class="form-group">
       <label for="{{ form.username.id_for_label }}" class="form-label">Username:</label>
@@ -110,7 +138,20 @@
       </select>
     </div>
 
+    <div class="form-group">
+      <label class="form-label">Verify you're human:</label>
+      {{ form.captcha }}
+      {% if form.captcha.errors %}
+      <div class="alert alert-error">
+        {% for error in form.captcha.errors %}
+        <p>{{ error }}</p>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+
     <button type="submit" class="btn btn-primary" style="width: 100%;">Register</button>
+    {% endif %}
   </form>
 
   <div style="text-align: center; margin-top: 1rem;">
@@ -142,5 +183,105 @@
       icon.textContent = '👁️';
     }
   }
+
+  let countdownInterval;
+
+  function startCountdown() {
+    let timeLeft = 60;
+    const countdownEl = document.getElementById('countdown');
+    const verifyBtn = document.getElementById('verifyBtn');
+    const codeInput = document.getElementById('id_verification_code');
+
+    countdownInterval = setInterval(() => {
+      timeLeft--;
+      countdownEl.textContent = timeLeft;
+
+      if (timeLeft <= 10) {
+        countdownEl.style.color = '#ff6b6b';
+      }
+
+      if (timeLeft <= 0) {
+        clearInterval(countdownInterval);
+        countdownEl.textContent = 'EXPIRED';
+        countdownEl.style.color = '#e74c3c';
+        codeInput.disabled = true;
+        verifyBtn.disabled = true;
+        verifyBtn.textContent = 'Code Expired - Request New Code';
+
+        // Show message
+        const msg = document.createElement('div');
+        msg.style.cssText = 'background: #e74c3c; color: white; padding: 1rem; border-radius: 8px; margin-top: 1rem; text-align: center;';
+        msg.textContent = '❌ Verification code expired! Please request a new code.';
+        document.getElementById('verificationSection').parentElement.insertBefore(msg, document.getElementById('verificationSection').nextSibling);
+      }
+    }, 1000);
+  }
+
+  function resendCode() {
+    const email = document.getElementById('id_email').value;
+    const btn = event.target;
+
+    if (!email) {
+      alert('Please enter your email');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+
+    fetch('/users/send-verification/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+      },
+      body: JSON.stringify({ email: email })
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert('Verification code sent! Check your email.');
+          btn.textContent = 'Resend Code';
+          btn.disabled = false;
+
+          // Reset countdown
+          clearInterval(countdownInterval);
+          const countdownEl = document.getElementById('countdown');
+          countdownEl.textContent = '60';
+          countdownEl.style.color = '#ff6b6b';
+
+          const codeInput = document.getElementById('id_verification_code');
+          const verifyBtn = document.getElementById('verifyBtn');
+          codeInput.disabled = false;
+          codeInput.value = '';
+          verifyBtn.disabled = false;
+          verifyBtn.textContent = 'Verify Email';
+
+          // Remove expired message if exists
+          const expiredMsg = document.querySelector('[style*="background: #e74c3c"]');
+          if (expiredMsg) expiredMsg.remove();
+
+          startCountdown();
+        } else {
+          alert('Error: ' + data.message);
+          btn.textContent = 'Resend Code';
+          btn.disabled = false;
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to send code');
+        btn.textContent = 'Resend Code';
+        btn.disabled = false;
+      });
+  }
+
+  // Start countdown when page loads if verification section is visible
+  document.addEventListener('DOMContentLoaded', function () {
+    const verificationSection = document.getElementById('verificationSection');
+    if (verificationSection) {
+      startCountdown();
+    }
+  });
 </script>
 {% endblock %}

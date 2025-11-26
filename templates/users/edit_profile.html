@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Profile - CTF Platform{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 700px; margin: 0 auto;">
+  <div class="card-header">
+    <h1 class="card-title">✏️ Edit Profile</h1>
+    <p>Update your profile information and photo</p>
+  </div>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <!-- Profile Photo Section -->
+    <div class="form-group" style="text-align: center; margin-bottom: 2rem;">
+      <label class="form-label">Profile Photo</label>
+      <div style="margin: 1rem 0;">
+        {% if profile.profile_photo %}
+        <img src="{{ profile.profile_photo.url }}" alt="Profile Photo" id="profilePreview"
+          style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 3px solid #00ff88;">
+        {% else %}
+        <div id="profilePreview"
+          style="width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 4rem; color: white;">
+          👤
+        </div>
+        {% endif %}
+      </div>
+      {{ form.profile_photo }}
+      <small style="color: #666; display: block; margin-top: 0.5rem;">
+        Recommended: Square image, max 5MB (JPG, PNG, GIF)
+      </small>
+    </div>
+
+    <!-- Personal Information -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+      <div class="form-group">
+        <label for="id_first_name" class="form-label">First Name:</label>
+        <input type="text" name="first_name" id="id_first_name" class="form-control"
+          value="{{ form.first_name.value|default:'' }}">
+      </div>
+
+      <div class="form-group">
+        <label for="id_last_name" class="form-label">Last Name:</label>
+        <input type="text" name="last_name" id="id_last_name" class="form-control"
+          value="{{ form.last_name.value|default:'' }}">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="id_email" class="form-label">Email:</label>
+      {{ form.email }}
+      <small style="color: #666; display: block; margin-top: 0.5rem;">
+        Email cannot be changed for security reasons
+      </small>
+    </div>
+
+    <!-- Bio -->
+    <div class="form-group">
+      <label for="{{ form.bio.id_for_label }}" class="form-label">Bio:</label>
+      {{ form.bio }}
+      {% if form.bio.errors %}
+      <div class="alert alert-error">
+        {% for error in form.bio.errors %}
+        <p>{{ error }}</p>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Additional Information -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+      <div class="form-group">
+        <label for="{{ form.sex.id_for_label }}" class="form-label">Sex:</label>
+        {{ form.sex }}
+      </div>
+
+      <div class="form-group">
+        <label for="{{ form.education_level.id_for_label }}" class="form-label">Education Level:</label>
+        {{ form.education_level }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="{{ form.department.id_for_label }}" class="form-label">Department:</label>
+      {{ form.department }}
+    </div>
+
+    <!-- Buttons -->
+    <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+      <button type="submit" class="btn btn-primary" style="flex: 1;">Save Changes</button>
+      <a href="{% url 'users:profile' %}" class="btn" style="flex: 1; text-align: center; background: #666;">Cancel</a>
+    </div>
+  </form>
+</div>
+
+<script>
+  // Preview image before upload
+  const photoInput = document.getElementById('{{ form.profile_photo.id_for_label }}');
+  const preview = document.getElementById('profilePreview');
+
+  photoInput.addEventListener('change', function (e) {
+    const file = e.target.files[0];
+    if (file) {
+      // Check file size (5MB max)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('File size must be less than 5MB');
+        this.value = '';
+        return;
+      }
+
+      // Check file type
+      if (!file.type.match('image.*')) {
+        alert('Please select an image file');
+        this.value = '';
+        return;
+      }
+
+      // Preview image
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        if (preview.tagName === 'IMG') {
+          preview.src = e.target.result;
+        } else {
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          img.style.cssText = 'width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 3px solid #00ff88;';
+          preview.parentNode.replaceChild(img, preview);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+</script>
+{% endblock %}

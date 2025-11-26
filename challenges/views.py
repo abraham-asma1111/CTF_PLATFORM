@@ -69,15 +69,23 @@ def challenge_list(request):
             is_correct=True
         ).values_list('challenge_id', flat=True))
     
+    # Get all categories
+    categories = Challenge.CATEGORY_CHOICES
+    
     context = {
         'challenges': challenges,
         'user_solved': user_solved,
+        'categories': categories,
     }
     return render(request, 'challenges/list.html', context)
 
 @login_required
 def challenge_detail(request, challenge_id):
     """Display challenge details and submission form"""
+    # If admin, show admin view
+    if request.user.is_staff or request.user.is_superuser:
+        return redirect('challenges:admin_detail', challenge_id=challenge_id)
+    
     challenge = get_object_or_404(Challenge, id=challenge_id, is_active=True)
     
     # Check if user already solved this challenge
@@ -92,6 +100,27 @@ def challenge_detail(request, challenge_id):
         'user_solved': user_solved,
     }
     return render(request, 'challenges/detail.html', context)
+
+@login_required
+def admin_challenge_detail(request, challenge_id):
+    """Admin view for challenge details and editing"""
+    # Only admins can access
+    if not (request.user.is_staff or request.user.is_superuser):
+        messages.error(request, 'Access denied. Admin only.')
+        return redirect('challenges:detail', challenge_id=challenge_id)
+    
+    challenge = get_object_or_404(Challenge, id=challenge_id)
+    
+    # Get submission stats for this challenge
+    total_submissions = Submission.objects.filter(challenge=challenge).count()
+    correct_submissions = Submission.objects.filter(challenge=challenge, is_correct=True).count()
+    
+    context = {
+        'challenge': challenge,
+        'total_submissions': total_submissions,
+        'correct_submissions': correct_submissions,
+    }
+    return render(request, 'challenges/admin_detail.html', context)
 
 @login_required
 @csrf_exempt
@@ -113,34 +142,44 @@ def submit_flag(request, challenge_id):
         
         challenge = get_object_or_404(Challenge, id=challenge_id, is_active=True)
         
-        # Check if user already solved this challenge
+        # Check if user already has a submission for this challenge
         existing_submission = Submission.objects.filter(
             user=request.user,
-            challenge=challenge,
-            is_correct=True
+            challenge=challenge
         ).first()
         
-        if existing_submission:
+        # Check if user already solved this challenge
+        if existing_submission and existing_submission.is_correct:
             return JsonResponse({'success': False, 'message': 'You have already solved this challenge'})
         
         # Check the flag
         is_correct = challenge.check_flag(submitted_flag)
         
-        # Create submission record
-        submission = Submission.objects.create(
-            user=request.user,
-            challenge=challenge,
-            submitted_flag=submitted_flag,
-            is_correct=is_correct
-        )
+        if existing_submission:
+            # Update existing submission
+            existing_submission.submitted_flag = submitted_flag
+            existing_submission.is_correct = is_correct
+            existing_submission.save()
+            submission = existing_submission
+            was_previously_correct = False
+        else:
+            # Create new submission record
+            submission = Submission.objects.create(
+                user=request.user,
+                challenge=challenge,
+                submitted_flag=submitted_flag,
+                is_correct=is_correct
+            )
+            was_previously_correct = False
         
-        if is_correct:
-            # Update user profile
-            profile = request.user.userprofile
-            profile.total_score += challenge.points
-            profile.challenges_solved += 1
-            profile.last_submission = timezone.now()
-            profile.save()
+        if submission.is_correct:
+            # Only update profile if this is the first time solving this challenge
+            if not was_previously_correct:
+                profile = request.user.userprofile
+                profile.total_score += challenge.points
+                profile.challenges_solved += 1
+                profile.last_submission = timezone.now()
+                profile.save()
             
             return JsonResponse({
                 'success': True, 
@@ -153,7 +192,10 @@ def submit_flag(request, challenge_id):
     except json.JSONDecodeError:
         return JsonResponse({'success': False, 'message': 'Invalid JSON data'})
     except Exception as e:
-        return JsonResponse({'success': False, 'message': 'An error occurred'})
+        import traceback
+        print(f"Error in submit_flag: {str(e)}")
+        traceback.print_exc()
+        return JsonResponse({'success': False, 'message': f'An error occurred: {str(e)}'})
 
 
 @login_required

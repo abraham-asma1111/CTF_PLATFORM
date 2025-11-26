@@ -1,0 +1,179 @@
+#!/usr/bin/env python
+"""
+Email Configuration Setup Script for CTF Platform
+"""
+
+import os
+import sys
+from pathlib import Path
+
+def setup_email():
+    """Interactive email setup"""
+    
+    print("\n" + "="*50)
+    print("CTF Platform - Email Configuration Setup")
+    print("="*50 + "\n")
+    
+    env_file = Path('.env')
+    
+    # Check if .env exists
+    if env_file.exists():
+        print("✓ .env file already exists\n")
+        response = input("Do you want to update email configuration? (y/n): ").lower()
+        if response != 'y':
+            print("Skipping email setup")
+            return
+    else:
+        print("Creating .env file from template...")
+        if Path('.env.example').exists():
+            with open('.env.example', 'r') as f:
+                content = f.read()
+            with open('.env', 'w') as f:
+                f.write(content)
+            print("✓ .env file created\n")
+        else:
+            print("✗ .env.example not found")
+            return
+    
+    print("\nEmail Provider Options:")
+    print("1. Gmail (Recommended)")
+    print("2. SendGrid")
+    print("3. Outlook/Hotmail")
+    print("4. Yahoo Mail")
+    print("5. Console (Development only)")
+    print()
+    
+    choice = input("Select email provider (1-5): ").strip()
+    
+    config = {}
+    
+    if choice == '1':
+        print("\n" + "="*50)
+        print("Gmail Setup Instructions:")
+        print("="*50)
+        print("1. Go to https://myaccount.google.com/")
+        print("2. Click 'Security' in the left menu")
+        print("3. Enable '2-Step Verification'")
+        print("4. Go to https://myaccount.google.com/apppasswords")
+        print("5. Select 'Mail' and 'Windows Computer'")
+        print("6. Copy the 16-character password\n")
+        
+        email = input("Enter your Gmail address: ").strip()
+        password = input("Enter your 16-character App Password: ").strip()
+        
+        config = {
+            'EMAIL_BACKEND': 'django.core.mail.backends.smtp.EmailBackend',
+            'EMAIL_HOST': 'smtp.gmail.com',
+            'EMAIL_PORT': '587',
+            'EMAIL_USE_TLS': 'True',
+            'EMAIL_HOST_USER': email,
+            'EMAIL_HOST_PASSWORD': password,
+            'DEFAULT_FROM_EMAIL': email,
+        }
+    
+    elif choice == '2':
+        print("\nSendGrid Setup:")
+        api_key = input("Enter your SendGrid API Key: ").strip()
+        email = input("Enter sender email address: ").strip()
+        
+        config = {
+            'EMAIL_BACKEND': 'django.core.mail.backends.smtp.EmailBackend',
+            'EMAIL_HOST': 'smtp.sendgrid.net',
+            'EMAIL_PORT': '587',
+            'EMAIL_USE_TLS': 'True',
+            'EMAIL_HOST_USER': 'apikey',
+            'EMAIL_HOST_PASSWORD': api_key,
+            'DEFAULT_FROM_EMAIL': email,
+        }
+    
+    elif choice == '3':
+        print("\nOutlook Setup:")
+        email = input("Enter your Outlook email: ").strip()
+        password = input("Enter your Outlook password: ").strip()
+        
+        config = {
+            'EMAIL_BACKEND': 'django.core.mail.backends.smtp.EmailBackend',
+            'EMAIL_HOST': 'smtp-mail.outlook.com',
+            'EMAIL_PORT': '587',
+            'EMAIL_USE_TLS': 'True',
+            'EMAIL_HOST_USER': email,
+            'EMAIL_HOST_PASSWORD': password,
+            'DEFAULT_FROM_EMAIL': email,
+        }
+    
+    elif choice == '4':
+        print("\nYahoo Mail Setup:")
+        email = input("Enter your Yahoo email: ").strip()
+        password = input("Enter your Yahoo App Password: ").strip()
+        
+        config = {
+            'EMAIL_BACKEND': 'django.core.mail.backends.smtp.EmailBackend',
+            'EMAIL_HOST': 'smtp.mail.yahoo.com',
+            'EMAIL_PORT': '587',
+            'EMAIL_USE_TLS': 'True',
+            'EMAIL_HOST_USER': email,
+            'EMAIL_HOST_PASSWORD': password,
+            'DEFAULT_FROM_EMAIL': email,
+        }
+    
+    elif choice == '5':
+        print("\nConsole Backend (Development Only):")
+        print("Emails will be printed to console instead of being sent")
+        config = {
+            'EMAIL_BACKEND': 'django.core.mail.backends.console.EmailBackend',
+        }
+    
+    else:
+        print("Invalid option")
+        return
+    
+    # Update .env file
+    print("\nUpdating .env file...")
+    
+    # Read existing .env
+    env_content = {}
+    if env_file.exists():
+        with open(env_file, 'r') as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith('#') and '=' in line:
+                    key, value = line.split('=', 1)
+                    env_content[key.strip()] = value.strip()
+    
+    # Update with new config
+    env_content.update(config)
+    
+    # Write back to .env
+    with open(env_file, 'w') as f:
+        f.write("# Email Configuration\n")
+        f.write("# Generated by setup_email.py\n\n")
+        for key, value in env_content.items():
+            f.write(f"{key}={value}\n")
+    
+    print("✓ Email configuration updated!\n")
+    
+    # Test email
+    if choice != '5':
+        print("Testing email configuration...")
+        try:
+            from django.core.mail import send_mail
+            send_mail(
+                'CTF Platform - Test Email',
+                'This is a test email from CTF Platform.',
+                None,
+                ['test@example.com'],
+                fail_silently=False,
+            )
+            print("✓ Test email sent successfully!")
+        except Exception as e:
+            print(f"✗ Error sending test email: {str(e)}")
+            print("Please check your email configuration")
+    
+    print("\n" + "="*50)
+    print("Setup complete!")
+    print("="*50)
+    print("\nUsers will now receive verification codes when they register.")
+    print("Restart the Django server for changes to take effect.")
+
+if __name__ == '__main__':
+    setup_email()

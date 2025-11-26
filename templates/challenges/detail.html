@@ -26,8 +26,9 @@
   </div>
 
   {% if challenge.challenge_file %}
-  <div class="challenge-file" style="margin-top: 2rem; padding: 1rem; background: #f0f0f0; border-radius: 8px;">
-    <h3>📥 Challenge File</h3>
+  <div class="challenge-file"
+    style="margin-top: 2rem; padding: 1rem; background: rgba(0, 255, 136, 0.1); border: 2px solid #00ff88; border-radius: 8px;">
+    <h3 style="color: #00ff88;">📥 Challenge File</h3>
     <p>Download the challenge file to get started:</p>
     <a href="{% url 'challenges:download' challenge.id %}" class="btn btn-primary" style="margin-top: 0.5rem;">
       ⬇️ Download File

@@ -548,3 +548,55 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 });
+
+
+// Category Filter Functionality
+function initCategoryFilter() {
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const challengeCards = document.querySelectorAll('.challenge-card');
+
+  console.log('Filter buttons found:', filterBtns.length);
+  console.log('Challenge cards found:', challengeCards.length);
+
+  if (filterBtns.length === 0 || challengeCards.length === 0) {
+    console.log('No filter buttons or challenge cards found');
+    return;
+  }
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', function (e) {
+      e.preventDefault();
+      const selectedCategory = this.getAttribute('data-category');
+      console.log('Filter clicked:', selectedCategory);
+
+      // Update active button
+      filterBtns.forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+
+      // Filter challenges
+      let visibleCount = 0;
+      challengeCards.forEach(card => {
+        const cardCategory = card.getAttribute('data-category');
+
+        if (selectedCategory === 'all' || cardCategory === selectedCategory) {
+          card.style.display = 'block';
+          card.style.animation = 'fadeIn 0.3s ease-in';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+      console.log('Visible cards:', visibleCount);
+    });
+  });
+}
+
+// Initialize filter when DOM is ready
+document.addEventListener('DOMContentLoaded', function () {
+  initCategoryFilter();
+});
+
+// Also try initializing after a short delay to ensure DOM is fully loaded
+setTimeout(function () {
+  initCategoryFilter();
+}, 100);

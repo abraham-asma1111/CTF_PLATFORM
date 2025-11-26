@@ -6,9 +6,13 @@ app_name = 'users'
 
 urlpatterns = [
     path('register/', views.register, name='register'),
-    path('login/', auth_views.LoginView.as_view(template_name='users/login.html'), name='login'),
+    path('login/', views.custom_login, name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('profile/', views.profile, name='profile'),
+    path('profile/edit/', views.edit_profile, name='edit_profile'),
     path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('manage-users/', views.manage_users, name='manage_users'),
+    path('send-verification/', views.send_verification_email, name='send_verification'),
+    path('forgot-password/', views.forgot_password, name='forgot_password'),
+    path('reset-password/', views.reset_password, name='reset_password'),
 ]

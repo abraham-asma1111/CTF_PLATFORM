@@ -4,6 +4,28 @@
 
 {% block content %}
 <div class="dashboard-wrapper">
+  <!-- Profile Photo - Above Dashboard -->
+  <div
+    style="padding: 0.75rem 1.5rem; display: flex; align-items: center; gap: 1rem; background: rgba(0,0,0,0.3); border-bottom: 2px solid #00ff88; margin-bottom: 0;">
+    <div onclick="openProfileModal()" style="cursor: pointer;">
+      {% if profile.profile_photo %}
+      <img src="{{ profile.profile_photo.url }}" alt="Profile" class="profile-avatar"
+        style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 4px solid #00ff88; transition: transform 0.2s; box-shadow: 0 4px 12px rgba(0,255,136,0.5);"
+        onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+      {% else %}
+      <div
+        style="width: 70px; height: 70px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; border: 4px solid #00ff88; transition: transform 0.2s; box-shadow: 0 4px 12px rgba(0,255,136,0.5);"
+        onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+        👤
+      </div>
+      {% endif %}
+    </div>
+    <div>
+      <h2 style="margin: 0; color: #00ff88; font-size: 1.3rem;">{{ user.first_name }} {{ user.last_name }}</h2>
+      <p style="margin: 0.25rem 0 0 0; color: #999;">Rank: #{{ user_rank }} | Score: {{ profile.total_score }}</p>
+    </div>
+  </div>
+
   <!-- Top Navigation Bar -->
   <div class="dashboard-navbar">
     <div class="navbar-left">
@@ -17,12 +39,9 @@
     </div>
     <div class="navbar-right">
       <div class="time-display" id="timeDisplay">00:00:00</div>
-      <div class="user-profile">
-        <span class="profile-avatar">👤</span>
-        <div class="profile-info">
-          <div class="profile-name">{{ user.first_name }} {{ user.last_name }}</div>
-          <div class="profile-rank">Rank: #{{ user_rank }}</div>
-        </div>
+      <div class="profile-info" style="text-align: right;">
+        <div class="profile-name">{{ user.first_name }} {{ user.last_name }}</div>
+        <div class="profile-rank">Rank: #{{ user_rank }}</div>
       </div>
     </div>
   </div>
@@ -102,8 +121,24 @@
         <div class="card profile-card">
           <div class="card-header profile-header">
             <span>👤 Profile Info</span>
+            <a href="{% url 'users:edit_profile' %}" class="btn btn-primary"
+              style="padding: 0.5rem 1rem; font-size: 0.9rem;">✏️ Edit Profile</a>
           </div>
           <div class="card-body">
+            {% if profile.profile_photo %}
+            <div style="text-align: center; margin-bottom: 1rem;">
+              <img src="{{ profile.profile_photo.url }}" alt="Profile Photo" onclick="openProfileModal()"
+                style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 4px solid #00ff88; cursor: pointer; transition: transform 0.2s;"
+                onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            </div>
+            {% endif %}
+            {% if profile.bio %}
+            <div class="profile-row"
+              style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1);">
+              <span style="display: block; margin-bottom: 0.5rem; color: #00ff88;">Bio:</span>
+              <span class="value" style="display: block; line-height: 1.6;">{{ profile.bio }}</span>
+            </div>
+            {% endif %}
             <div class="profile-row">
               <span>Username:</span>
               <span class="value">{{ user.username }}</span>
@@ -196,6 +231,42 @@
 </div>
 </div>
 
+<!-- Profile Photo Modal -->
+<div id="profileModal"
+  style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; justify-content: center; align-items: center;">
+  <div style="position: relative; max-width: 90%; max-height: 90%;">
+    <span onclick="closeProfileModal()"
+      style="position: absolute; top: -40px; right: 0; color: white; font-size: 2rem; cursor: pointer; font-weight: bold;">&times;</span>
+    {% if profile.profile_photo %}
+    <img src="{{ profile.profile_photo.url }}" alt="Profile Photo"
+      style="max-width: 100%; max-height: 80vh; border-radius: 10px; border: 3px solid #00ff88;">
+    <div style="text-align: center; margin-top: 1rem;">
+      <h2 style="color: white; margin-bottom: 0.5rem;">{{ user.first_name }} {{ user.last_name }}</h2>
+      <p style="color: #00ff88;">@{{ user.username }}</p>
+      {% if profile.bio %}
+      <p style="color: #ccc; max-width: 600px; margin: 1rem auto;">{{ profile.bio }}</p>
+      {% endif %}
+      <a href="{% url 'users:edit_profile' %}" class="btn btn-primary"
+        style="margin-top: 1rem; display: inline-block;">✏️ Edit Profile</a>
+    </div>
+    {% else %}
+    <div style="text-align: center; color: white;">
+      <div
+        style="width: 300px; height: 300px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 10rem;">
+        👤
+      </div>
+      <h2 style="margin-top: 2rem;">{{ user.first_name }} {{ user.last_name }}</h2>
+      <p style="color: #00ff88;">@{{ user.username }}</p>
+      {% if profile.bio %}
+      <p style="color: #ccc; max-width: 600px; margin: 1rem auto;">{{ profile.bio }}</p>
+      {% endif %}
+      <a href="{% url 'users:edit_profile' %}" class="btn btn-primary"
+        style="margin-top: 1rem; display: inline-block;">✏️ Upload Photo</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
 <script>
   function updateTime() {
     const now = new Date();
@@ -206,5 +277,29 @@
   }
   updateTime();
   setInterval(updateTime, 1000);
+
+  function openProfileModal() {
+    const modal = document.getElementById('profileModal');
+    modal.style.display = 'flex';
+  }
+
+  function closeProfileModal() {
+    const modal = document.getElementById('profileModal');
+    modal.style.display = 'none';
+  }
+
+  // Close modal when clicking outside the image
+  document.getElementById('profileModal').addEventListener('click', function (e) {
+    if (e.target === this) {
+      closeProfileModal();
+    }
+  });
+
+  // Close modal with Escape key
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      closeProfileModal();
+    }
+  });
 </script>
 {% endblock %}

@@ -10,9 +10,26 @@
   </div>
 </div>
 
+<!-- Category Filter -->
+<div class="filter-section">
+  <div class="filter-container">
+    <h3>Filter by Category</h3>
+    <div class="category-filters">
+      <button class="filter-btn active" data-category="all">
+        All Categories
+      </button>
+      {% for category_code, category_name in categories %}
+      <button class="filter-btn" data-category="{{ category_code }}">
+        {{ category_name }}
+      </button>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
 <div class="challenge-grid">
   {% for challenge in challenges %}
-  <div class="challenge-card">
+  <div class="challenge-card" data-category="{{ challenge.category }}">
     <div class="challenge-meta">
       <span class="difficulty-badge difficulty-{{ challenge.difficulty }}">
         {{ challenge.get_difficulty_display }}
@@ -27,8 +44,13 @@
     <p class="challenge-category">{{ challenge.get_category_display }}</p>
     <p class="challenge-description">{{ challenge.description|truncatewords:20 }}</p>
 
-    <div style="margin-top: 1rem;">
+    <div class="challenge-actions">
       {% if user.is_authenticated %}
+      {% if user.is_staff or user.is_superuser %}
+      <a href="{% url 'challenges:admin_detail' challenge.id %}" class="btn btn-primary">
+        ✏️ Edit Challenge
+      </a>
+      {% else %}
       <a href="{% url 'challenges:detail' challenge.id %}" class="btn btn-primary">
         {% if challenge.id in user_solved %}
         View Solution
@@ -36,6 +58,7 @@
         Solve Challenge
         {% endif %}
       </a>
+      {% endif %}
       {% else %}
       <a href="{% url 'users:login' %}" class="btn btn-secondary">Login to Solve</a>
       {% endif %}
