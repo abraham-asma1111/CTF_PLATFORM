@@ -1,0 +1,234 @@
+{% extends 'base.html' %}
+
+{% block title %}User Management - CTF Platform{% endblock %}
+
+{% block content %}
+<div class="admin-dashboard-wrapper">
+  <!-- Header -->
+  <div class="admin-header">
+    <div class="admin-title">
+      <h1>👥 User Management</h1>
+      <p>Manage all CTF platform users</p>
+    </div>
+    <div class="admin-user">
+      <span>Total Users: {{ total_users }}</span>
+      <a href="{% url 'users:admin_dashboard' %}" class="btn-back">← Back to Dashboard</a>
+    </div>
+  </div>
+
+  <!-- Users Table -->
+  <div class="users-section">
+    <div class="users-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Full Name</th>
+            <th>Score</th>
+            <th>Challenges Solved</th>
+            <th>Education</th>
+            <th>Department</th>
+            <th>Joined</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for user in users_page %}
+          <tr>
+            <td><strong>{{ user.username }}</strong></td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.first_name }} {{ user.last_name }}</td>
+            <td>
+              <span class="score-badge">{{ user.userprofile.total_score }}</span>
+            </td>
+            <td>{{ user.userprofile.challenges_solved }}</td>
+            <td>{{ user.userprofile.get_education_level_display|default:"N/A" }}</td>
+            <td>{{ user.userprofile.get_department_display|default:"N/A" }}</td>
+            <td>{{ user.date_joined|date:"M d, Y" }}</td>
+            <td>
+              <a href="/admin/auth/user/{{ user.id }}/change/" class="btn-edit">Edit</a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="9" style="text-align: center; padding: 2rem;">No users found</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  {% if users_page.has_other_pages %}
+  <div class="pagination">
+    {% if users_page.has_previous %}
+    <a href="?page=1" class="page-link">« First</a>
+    <a href="?page={{ users_page.previous_page_number }}" class="page-link">‹ Previous</a>
+    {% endif %}
+
+    <span class="page-info">
+      Page {{ users_page.number }} of {{ users_page.paginator.num_pages }}
+    </span>
+
+    {% if users_page.has_next %}
+    <a href="?page={{ users_page.next_page_number }}" class="page-link">Next ›</a>
+    <a href="?page={{ users_page.paginator.num_pages }}" class="page-link">Last »</a>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+
+<style>
+  .admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 2rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    border-left: 4px solid #FFD700;
+  }
+
+  .admin-title h1 {
+    margin: 0;
+    color: #FFD700;
+  }
+
+  .admin-title p {
+    margin: 0.5rem 0 0 0;
+    color: #999;
+  }
+
+  .admin-user {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: #fff;
+  }
+
+  .btn-back {
+    background: #3498db;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background 0.3s;
+  }
+
+  .btn-back:hover {
+    background: #2980b9;
+  }
+
+  .users-section {
+    background: rgba(0, 0, 0, 0.4);
+    padding: 2rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .users-table {
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+
+  th {
+    background: rgba(0, 0, 0, 0.5);
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 2px solid #00ff88;
+    color: #FFD700;
+    font-weight: bold;
+  }
+
+  td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: #ccc;
+  }
+
+  tr:hover {
+    background: rgba(0, 255, 136, 0.05);
+  }
+
+  .score-badge {
+    background: #00ff88;
+    color: #000;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-weight: bold;
+  }
+
+  .btn-edit {
+    background: #3498db;
+    color: #fff;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.8rem;
+    transition: background 0.3s;
+  }
+
+  .btn-edit:hover {
+    background: #2980b9;
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    padding: 2rem;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .page-link {
+    background: #00ff88;
+    color: #000;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background 0.3s;
+  }
+
+  .page-link:hover {
+    background: #00dd77;
+  }
+
+  .page-info {
+    color: #FFD700;
+    font-weight: bold;
+  }
+
+  @media (max-width: 768px) {
+    .admin-header {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    table {
+      font-size: 0.8rem;
+    }
+
+    th,
+    td {
+      padding: 0.5rem;
+    }
+
+    .pagination {
+      flex-wrap: wrap;
+    }
+  }
+</style>
+{% endblock %}

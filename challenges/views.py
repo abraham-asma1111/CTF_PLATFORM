@@ -100,6 +100,10 @@ def submit_flag(request, challenge_id):
     if request.method != 'POST':
         return JsonResponse({'success': False, 'message': 'Invalid request method'})
     
+    # Prevent admins from solving challenges
+    if request.user.is_staff or request.user.is_superuser:
+        return JsonResponse({'success': False, 'message': 'Admins cannot solve challenges.'})
+    
     try:
         data = json.loads(request.body)
         submitted_flag = data.get('flag', '').strip()

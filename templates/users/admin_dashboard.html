@@ -1,0 +1,474 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - CTF Platform{% endblock %}
+
+{% block content %}
+<div class="admin-dashboard-wrapper">
+  <!-- Admin Header -->
+  <div class="admin-header">
+    <div class="admin-title">
+      <h1>⚙️ Admin Dashboard</h1>
+      <p>Manage challenges and monitor platform activity</p>
+    </div>
+    <div class="admin-user">
+      <span>{{ user.first_name }} {{ user.last_name }}</span>
+      <a href="{% url 'users:logout' %}" class="btn-logout">Logout</a>
+    </div>
+  </div>
+
+  <!-- Statistics Grid -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">📋</div>
+      <div class="stat-content">
+        <div class="stat-label">Total Challenges</div>
+        <div class="stat-value">{{ total_challenges }}</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">✅</div>
+      <div class="stat-content">
+        <div class="stat-label">Active Challenges</div>
+        <div class="stat-value">{{ active_challenges }}</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">👥</div>
+      <div class="stat-content">
+        <div class="stat-label">Total Users</div>
+        <div class="stat-value">{{ total_users }}</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">📊</div>
+      <div class="stat-content">
+        <div class="stat-label">Total Submissions</div>
+        <div class="stat-value">{{ total_submissions }}</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">✔️</div>
+      <div class="stat-content">
+        <div class="stat-label">Correct Submissions</div>
+        <div class="stat-value">{{ correct_submissions }}</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">📈</div>
+      <div class="stat-content">
+        <div class="stat-label">Success Rate</div>
+        <div class="stat-value">{{ success_rate }}%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Category Stats -->
+  <div class="category-stats-section">
+    <h2>📂 Challenges by Category</h2>
+    <div class="category-stats-grid">
+      {% for category, stats in category_stats.items %}
+      <div class="category-stat">
+        <div class="category-name">{{ stats.display_name }}</div>
+        <div class="category-count">{{ stats.count }} challenges</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Recent Submissions -->
+  <div class="recent-section">
+    <h2>📝 Recent Submissions</h2>
+    <div class="submissions-table">
+      <table>
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Challenge</th>
+            <th>Status</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for submission in recent_submissions %}
+          <tr>
+            <td>{{ submission.user.username }}</td>
+            <td>{{ submission.challenge.title }}</td>
+            <td>
+              {% if submission.is_correct %}
+              <span class="badge-correct">✓ Correct</span>
+              {% else %}
+              <span class="badge-incorrect">✗ Incorrect</span>
+              {% endif %}
+            </td>
+            <td>{{ submission.timestamp|date:"M d, H:i" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Quick Links -->
+  <div class="quick-links-section">
+    <a href="{% url 'users:manage_users' %}" class="quick-link-card">
+      <div class="link-icon">👥</div>
+      <div class="link-content">
+        <div class="link-title">User Management</div>
+        <div class="link-desc">Manage all users and their profiles</div>
+      </div>
+      <div class="link-arrow">→</div>
+    </a>
+  </div>
+
+  <!-- All Challenges -->
+  <div class="challenges-section">
+    <h2>📚 All Challenges</h2>
+    <div class="challenges-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Difficulty</th>
+            <th>Points</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for challenge in all_challenges %}
+          <tr>
+            <td>{{ challenge.title }}</td>
+            <td>{{ challenge.get_category_display }}</td>
+            <td>
+              <span class="difficulty-badge difficulty-{{ challenge.difficulty }}">
+                {{ challenge.get_difficulty_display }}
+              </span>
+            </td>
+            <td>{{ challenge.points }}</td>
+            <td>
+              {% if challenge.is_active %}
+              <span class="badge-active">Active</span>
+              {% else %}
+              <span class="badge-inactive">Inactive</span>
+              {% endif %}
+            </td>
+            <td>
+              <a href="/admin/challenges/challenge/{{ challenge.id }}/change/" class="btn-edit">Edit</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Admin Links -->
+  <div class="admin-links">
+    <a href="/admin/" class="btn-admin-panel">Go to Django Admin</a>
+    <a href="{% url 'home' %}" class="btn-home">Back to Home</a>
+  </div>
+</div>
+
+<style>
+  .admin-dashboard-wrapper {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    min-height: 100vh;
+    padding: 2rem;
+    color: #fff;
+  }
+
+  .admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 2rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    border-left: 4px solid #FFD700;
+  }
+
+  .admin-title h1 {
+    margin: 0;
+    color: #FFD700;
+  }
+
+  .admin-title p {
+    margin: 0.5rem 0 0 0;
+    color: #999;
+  }
+
+  .admin-user {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .btn-logout {
+    background: #e74c3c;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background 0.3s;
+  }
+
+  .btn-logout:hover {
+    background: #c0392b;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .stat-card {
+    background: rgba(0, 0, 0, 0.4);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border-left: 4px solid #00ff88;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .stat-icon {
+    font-size: 2rem;
+  }
+
+  .stat-label {
+    font-size: 0.85rem;
+    color: #999;
+  }
+
+  .stat-value {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #00ff88;
+  }
+
+  .category-stats-section,
+  .recent-section,
+  .users-section,
+  .challenges-section {
+    background: rgba(0, 0, 0, 0.4);
+    padding: 2rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .category-stats-section h2,
+  .recent-section h2,
+  .challenges-section h2 {
+    color: #FFD700;
+    margin-top: 0;
+  }
+
+  .quick-links-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .quick-link-card {
+    background: rgba(0, 0, 0, 0.4);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 2px solid #00ff88;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    text-decoration: none;
+    color: #fff;
+    transition: all 0.3s ease;
+  }
+
+  .quick-link-card:hover {
+    background: rgba(0, 255, 136, 0.1);
+    transform: translateX(5px);
+  }
+
+  .link-icon {
+    font-size: 2rem;
+  }
+
+  .link-content {
+    flex: 1;
+  }
+
+  .link-title {
+    font-weight: bold;
+    color: #FFD700;
+    margin-bottom: 0.25rem;
+  }
+
+  .link-desc {
+    font-size: 0.85rem;
+    color: #999;
+  }
+
+  .link-arrow {
+    font-size: 1.5rem;
+    color: #00ff88;
+  }
+
+  .category-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+  }
+
+  .category-stat {
+    background: rgba(0, 255, 136, 0.1);
+    padding: 1rem;
+    border-radius: 4px;
+    border-left: 3px solid #00ff88;
+    text-align: center;
+  }
+
+  .category-name {
+    font-weight: bold;
+    color: #fff;
+  }
+
+  .category-count {
+    font-size: 0.85rem;
+    color: #00ff88;
+    margin-top: 0.5rem;
+  }
+
+  .submissions-table,
+  .challenges-table {
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+
+  th {
+    background: rgba(0, 0, 0, 0.5);
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 2px solid #00ff88;
+    color: #FFD700;
+  }
+
+  td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  tr:hover {
+    background: rgba(0, 255, 136, 0.05);
+  }
+
+  .badge-correct {
+    background: #27ae60;
+    color: #fff;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+  }
+
+  .badge-incorrect {
+    background: #e74c3c;
+    color: #fff;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+  }
+
+  .badge-active {
+    background: #27ae60;
+    color: #fff;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+  }
+
+  .badge-inactive {
+    background: #95a5a6;
+    color: #fff;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+  }
+
+  .btn-edit {
+    background: #3498db;
+    color: #fff;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.8rem;
+    transition: background 0.3s;
+  }
+
+  .btn-edit:hover {
+    background: #2980b9;
+  }
+
+  .admin-links {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+  }
+
+  .btn-admin-panel,
+  .btn-home {
+    background: #FFD700;
+    color: #000;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background 0.3s;
+  }
+
+  .btn-admin-panel:hover,
+  .btn-home:hover {
+    background: #ffed4e;
+  }
+
+  .btn-home {
+    background: #00ff88;
+  }
+
+  .btn-home:hover {
+    background: #00dd77;
+  }
+
+  @media (max-width: 768px) {
+    .admin-header {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    table {
+      font-size: 0.8rem;
+    }
+
+    th,
+    td {
+      padding: 0.5rem;
+    }
+  }
+</style>
+{% endblock %}

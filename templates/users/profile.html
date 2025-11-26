@@ -1,70 +1,210 @@
 {% extends 'base.html' %}
 
-{% block title %}Profile - CTF Platform{% endblock %}
+{% block title %}Dashboard - CTF Platform{% endblock %}
 
 {% block content %}
-<div class="card">
-  <div class="card-header">
-    <h1 class="card-title">👤 {{ user.username }}'s Profile</h1>
-  </div>
-
-  <div class="stats-grid">
-    <div class="stat-card">
-      <span class="stat-number">{{ profile.total_score }}</span>
-      <span class="stat-label">Total Points</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-number">{{ profile.challenges_solved }}</span>
-      <span class="stat-label">Challenges Solved</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-number">
-        {% if profile.last_submission %}
-        {{ profile.last_submission|date:"M d, Y" }}
-        {% else %}
-        Never
-        {% endif %}
-      </span>
-      <span class="stat-label">Last Submission</span>
-    </div>
-  </div>
-</div>
-
-{% if solved_challenges %}
-<div class="card">
-  <div class="card-header">
-    <h2 class="card-title">🏆 Solved Challenges</h2>
-  </div>
-
-  <div class="challenge-grid">
-    {% for submission in solved_challenges %}
-    <div class="challenge-card">
-      <div class="challenge-meta">
-        <span class="difficulty-badge difficulty-{{ submission.challenge.difficulty }}">
-          {{ submission.challenge.get_difficulty_display }}
-        </span>
-        <span class="points-badge">{{ submission.challenge.points }} pts</span>
-        <span class="solved-badge">✓ Solved</span>
-      </div>
-
-      <h3>{{ submission.challenge.title }}</h3>
-      <p class="challenge-category">{{ submission.challenge.get_category_display }}</p>
-      <p><small>Solved on {{ submission.timestamp|date:"M d, Y H:i" }}</small></p>
-
-      <div style="margin-top: 1rem;">
-        <a href="{% url 'challenges:detail' submission.challenge.id %}" class="btn btn-secondary">
-          View Challenge
-        </a>
+<div class="dashboard-wrapper">
+  <!-- Top Navigation Bar -->
+  <div class="dashboard-navbar">
+    <div class="navbar-left">
+      <span class="navbar-logo">CTF</span>
+      <div class="navbar-menu">
+        <a href="{% url 'home' %}" class="navbar-item">Home</a>
+        <a href="{% url 'challenges:list' %}" class="navbar-item">Challenges</a>
+        <a href="{% url 'leaderboard:leaderboard' %}" class="navbar-item">Leaderboard</a>
+        <a href="#" class="navbar-item">Rules</a>
       </div>
     </div>
-    {% endfor %}
+    <div class="navbar-right">
+      <div class="time-display" id="timeDisplay">00:00:00</div>
+      <div class="user-profile">
+        <span class="profile-avatar">👤</span>
+        <div class="profile-info">
+          <div class="profile-name">{{ user.first_name }} {{ user.last_name }}</div>
+          <div class="profile-rank">Rank: #{{ user_rank }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Dashboard -->
+  <div class="dashboard-main">
+    <!-- Left Sidebar -->
+    <div class="dashboard-sidebar">
+      <div class="sidebar-section">
+        <div class="section-title">📊 Your Stats</div>
+        <div class="stats-box">
+          <div class="stat-item">
+            <div class="stat-label">Total Points</div>
+            <div class="stat-value">{{ profile.total_score }}</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">Challenges Solved</div>
+            <div class="stat-value">{{ profile.challenges_solved }}</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">Your Rank</div>
+            <div class="stat-value">#{{ user_rank }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="section-title">📈 Recent Activity</div>
+        <div class="activity-list">
+          {% for submission in solved_challenges|slice:":5" %}
+          <div class="activity-item">
+            <div class="activity-text">{{ submission.challenge.title }}</div>
+            <div class="activity-desc">{{ submission.challenge.get_category_display }}</div>
+            <div class="activity-time">{{ submission.timestamp|date:"m-d H:i" }}</div>
+          </div>
+          {% empty %}
+          <div class="activity-item">
+            <div class="activity-text">No challenges solved yet</div>
+            <div class="activity-desc">Start solving to see your progress</div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <a href="{% url 'challenges:list' %}" class="btn-start-challenge">Start Challenge</a>
+      </div>
+    </div>
+
+    <!-- Center Content -->
+    <div class="dashboard-center">
+      <!-- Category Grid -->
+      <div class="category-grid">
+        {% for category, stats in category_stats.items %}
+        <div class="category-box {{ category }}">
+          <div class="box-title">{{ stats.display_name|upper }}</div>
+          <div class="box-icon">
+            {% if category == 'web' %}🌐
+            {% elif category == 'crypto' %}🔐
+            {% elif category == 'forensics' %}🔍
+            {% elif category == 'pwn' %}💣
+            {% elif category == 'reverse' %}🔄
+            {% elif category == 'misc' %}⚙️
+            {% endif %}
+          </div>
+          <div class="box-stats">
+            <div>{{ stats.solved_challenges }}/{{ stats.total_challenges }} Questions</div>
+            <div>Score: {{ stats.user_points }}/{{ stats.total_points }}</div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Bottom Cards -->
+      <div class="bottom-cards">
+        <!-- User Profile Card -->
+        <div class="card profile-card">
+          <div class="card-header profile-header">
+            <span>👤 Profile Info</span>
+          </div>
+          <div class="card-body">
+            <div class="profile-row">
+              <span>Username:</span>
+              <span class="value">{{ user.username }}</span>
+            </div>
+            <div class="profile-row">
+              <span>Email:</span>
+              <span class="value">{{ user.email }}</span>
+            </div>
+            <div class="profile-row">
+              <span>Education:</span>
+              <span class="value">{{ profile.get_education_level_display|default:"N/A" }}</span>
+            </div>
+            <div class="profile-row">
+              <span>Department:</span>
+              <span class="value">{{ profile.get_department_display|default:"N/A" }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Statistics Card -->
+        <div class="card stats-card">
+          <div class="card-header stats-header">
+            <span>📊 Statistics</span>
+          </div>
+          <div class="card-body">
+            <div class="stat-row">
+              <span>Total Score:</span>
+              <span class="value">{{ profile.total_score }}</span>
+            </div>
+            <div class="stat-row">
+              <span>Challenges Solved:</span>
+              <span class="value">{{ profile.challenges_solved }}</span>
+            </div>
+            <div class="stat-row">
+              <span>Current Rank:</span>
+              <span class="value">#{{ user_rank }}</span>
+            </div>
+            <div class="stat-row">
+              <span>Last Submission:</span>
+              <span class="value">
+                {% if profile.last_submission %}
+                {{ profile.last_submission|date:"M d, Y" }}
+                {% else %}
+                Never
+                {% endif %}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Achievements Card -->
+        <div class="card achievements-card">
+          <div class="card-header achievements-header">
+            <span>🏆 Achievements</span>
+          </div>
+          <div class="card-body">
+            {% if profile.challenges_solved >= 1 %}
+            <div class="achievement">
+              <span class="achievement-icon">🥇</span>
+              <span>First Challenge</span>
+            </div>
+            {% endif %}
+            {% if profile.challenges_solved >= 5 %}
+            <div class="achievement">
+              <span class="achievement-icon">🥈</span>
+              <span>5 Challenges Solved</span>
+            </div>
+            {% endif %}
+            {% if profile.challenges_solved >= 10 %}
+            <div class="achievement">
+              <span class="achievement-icon">🥉</span>
+              <span>10 Challenges Solved</span>
+            </div>
+            {% endif %}
+            {% if profile.total_score >= 100 %}
+            <div class="achievement">
+              <span class="achievement-icon">⭐</span>
+              <span>100 Points Earned</span>
+            </div>
+            {% endif %}
+            {% if user_rank <= 10 %} <div class="achievement">
+              <span class="achievement-icon">👑</span>
+              <span>Top 10 Rank</span>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
   </div>
 </div>
-{% else %}
-<div class="card">
-  <h2>No Challenges Solved Yet</h2>
-  <p>Start solving challenges to see your progress here!</p>
-  <a href="{% url 'challenges:list' %}" class="btn btn-primary">View Challenges</a>
 </div>
-{% endif %}
+
+<script>
+  function updateTime() {
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    document.getElementById('timeDisplay').textContent = `${hours}:${minutes}:${seconds}`;
+  }
+  updateTime();
+  setInterval(updateTime, 1000);
+</script>
 {% endblock %}
