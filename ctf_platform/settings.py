@@ -30,7 +30,7 @@ SECRET_KEY = 'django-insecure-#qp04+7e!v3=ogpc+3$u4-%#v&p1e35q7c+4!nrop99tu&344l
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', '10.161.170.159']
 
 
 # Application definition
@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'challenges',
     'submissions',
     'leaderboard',
+    'teams',
+    'chat',
 ]
 
 MIDDLEWARE = [
@@ -72,6 +74,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'ctf_platform.context_processors.footer_stats',
+                'chat.context_processors.chat_notifications',
             ],
         },
     },
@@ -87,6 +91,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+        'OPTIONS': {
+            'timeout': 20,  # 20 seconds timeout for database locks
+        }
     }
 }
 
@@ -135,9 +142,35 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # Login URLs
-LOGIN_URL = '/login/'
+LOGIN_URL = '/users/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+
+# Logging configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'exclude_chat': {
+            '()': 'django.utils.log.CallbackFilter',
+            'callback': lambda record: not record.getMessage().startswith('GET /chat/') and not record.getMessage().startswith('POST /chat/')
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'filters': ['exclude_chat'],
+        },
+    },
+    'loggers': {
+        'django.server': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -162,3 +195,7 @@ RECAPTCHA_PUBLIC_KEY = os.getenv('RECAPTCHA_PUBLIC_KEY', '')
 RECAPTCHA_PRIVATE_KEY = os.getenv('RECAPTCHA_PRIVATE_KEY', '')
 RECAPTCHA_REQUIRED_SCORE = 0.85  # For reCAPTCHA v3 (not used in v2)
 SILENCED_SYSTEM_CHECKS = ['django_recaptcha.recaptcha_test_key_error']  # Only for development
+
+# For mobile testing - bypass reCAPTCHA verification (REMOVE IN PRODUCTION!)
+# Uncomment the line below to disable reCAPTCHA verification for testing
+# RECAPTCHA_DISABLE = True

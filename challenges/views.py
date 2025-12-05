@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib import messages
 from django.utils import timezone
-from .models import Challenge
+from .models import Challenge, Hint, HintView
 from submissions.models import Submission
 from users.models import UserProfile
 import json
@@ -60,14 +60,31 @@ def home(request):
 
 def challenge_list(request):
     """Display all active challenges"""
-    challenges = Challenge.objects.filter(is_active=True)
+    from teams.models import TeamMembership
+    
+    challenges = Challenge.objects.filter(is_active=True).order_by('id')
     user_solved = []
     
     if request.user.is_authenticated:
-        user_solved = list(Submission.objects.filter(
-            user=request.user, 
-            is_correct=True
-        ).values_list('challenge_id', flat=True))
+        # Check if user is in a team
+        team_membership = TeamMembership.objects.filter(
+            user=request.user,
+            status='accepted'
+        ).select_related('team').first()
+        
+        if team_membership:
+            # Get team's solved challenges
+            user_solved = list(Submission.objects.filter(
+                team=team_membership.team,
+                is_correct=True
+            ).values_list('challenge_id', flat=True))
+        else:
+            # Get individual solved challenges
+            user_solved = list(Submission.objects.filter(
+                user=request.user, 
+                is_correct=True,
+                team__isnull=True
+            ).values_list('challenge_id', flat=True))
     
     # Get all categories
     categories = Challenge.CATEGORY_CHOICES
@@ -82,22 +99,56 @@ def challenge_list(request):
 @login_required
 def challenge_detail(request, challenge_id):
     """Display challenge details and submission form"""
+    from teams.models import TeamMembership
+    
     # If admin, show admin view
     if request.user.is_staff or request.user.is_superuser:
         return redirect('challenges:admin_detail', challenge_id=challenge_id)
     
     challenge = get_object_or_404(Challenge, id=challenge_id, is_active=True)
     
-    # Check if user already solved this challenge
-    user_solved = Submission.objects.filter(
+    # Check if user is in a team
+    team_membership = TeamMembership.objects.filter(
         user=request.user,
-        challenge=challenge,
-        is_correct=True
-    ).exists()
+        status='accepted'
+    ).select_related('team').first()
+    
+    user_team = team_membership.team if team_membership else None
+    
+    # Check if user/team already solved this challenge
+    if user_team:
+        user_solved = Submission.objects.filter(
+            team=user_team,
+            challenge=challenge,
+            is_correct=True
+        ).exists()
+    else:
+        user_solved = Submission.objects.filter(
+            user=request.user,
+            challenge=challenge,
+            is_correct=True,
+            team__isnull=True
+        ).exists()
+    
+    # Get hints for this challenge
+    hints = challenge.hints.all()
+    
+    # Check which hints user has viewed
+    viewed_hints = HintView.objects.filter(
+        user=request.user,
+        hint__challenge=challenge
+    ).values_list('hint_id', flat=True)
+    
+    # Check user's preference for showing hints
+    show_hints = request.user.userprofile.show_hints
     
     context = {
         'challenge': challenge,
         'user_solved': user_solved,
+        'hints': hints,
+        'viewed_hints': list(viewed_hints),
+        'show_hints': show_hints,
+        'user_team': user_team,
     }
     return render(request, 'challenges/detail.html', context)
 
@@ -134,6 +185,8 @@ def submit_flag(request, challenge_id):
         return JsonResponse({'success': False, 'message': 'Admins cannot solve challenges.'})
     
     try:
+        from teams.models import TeamMembership
+        
         data = json.loads(request.body)
         submitted_flag = data.get('flag', '').strip()
         
@@ -142,50 +195,77 @@ def submit_flag(request, challenge_id):
         
         challenge = get_object_or_404(Challenge, id=challenge_id, is_active=True)
         
-        # Check if user already has a submission for this challenge
-        existing_submission = Submission.objects.filter(
+        # Check if user is in a team
+        team_membership = TeamMembership.objects.filter(
             user=request.user,
-            challenge=challenge
-        ).first()
+            status='accepted'
+        ).select_related('team').first()
         
-        # Check if user already solved this challenge
-        if existing_submission and existing_submission.is_correct:
-            return JsonResponse({'success': False, 'message': 'You have already solved this challenge'})
+        user_team = team_membership.team if team_membership else None
+        
+        # Check if team/user already solved this challenge
+        if user_team:
+            # Check if team already solved this
+            team_solved = Submission.objects.filter(
+                team=user_team,
+                challenge=challenge,
+                is_correct=True
+            ).exists()
+            
+            if team_solved:
+                return JsonResponse({'success': False, 'message': 'Your team has already solved this challenge'})
+        else:
+            # Check if individual user already solved this
+            user_solved = Submission.objects.filter(
+                user=request.user,
+                challenge=challenge,
+                is_correct=True,
+                team__isnull=True
+            ).exists()
+            
+            if user_solved:
+                return JsonResponse({'success': False, 'message': 'You have already solved this challenge'})
         
         # Check the flag
         is_correct = challenge.check_flag(submitted_flag)
         
-        if existing_submission:
-            # Update existing submission
-            existing_submission.submitted_flag = submitted_flag
-            existing_submission.is_correct = is_correct
-            existing_submission.save()
-            submission = existing_submission
-            was_previously_correct = False
-        else:
-            # Create new submission record
-            submission = Submission.objects.create(
-                user=request.user,
-                challenge=challenge,
-                submitted_flag=submitted_flag,
-                is_correct=is_correct
-            )
-            was_previously_correct = False
+        # Create submission record
+        submission = Submission.objects.create(
+            user=request.user,
+            challenge=challenge,
+            submitted_flag=submitted_flag,
+            is_correct=is_correct,
+            team=user_team
+        )
         
         if submission.is_correct:
-            # Only update profile if this is the first time solving this challenge
-            if not was_previously_correct:
+            if user_team:
+                # Update team score
+                team = user_team
+                team.total_score += challenge.points
+                team.challenges_solved += 1
+                team.last_submission = timezone.now()
+                team.save()
+                
+                return JsonResponse({
+                    'success': True, 
+                    'message': f'Correct! Your team earned {challenge.points} points!',
+                    'points': challenge.points,
+                    'team_name': team.name
+                })
+            else:
+                # Update individual score
                 profile = request.user.userprofile
                 profile.total_score += challenge.points
                 profile.challenges_solved += 1
                 profile.last_submission = timezone.now()
                 profile.save()
-            
-            return JsonResponse({
-                'success': True, 
-                'message': f'Correct! You earned {challenge.points} points!',
-                'points': challenge.points
-            })
+                
+                return JsonResponse({
+                    'success': True, 
+                    'message': f'Correct! You earned {challenge.points} points!',
+                    'points': challenge.points
+                })
         else:
             return JsonResponse({'success': False, 'message': 'Incorrect flag. Try again!'})
             
@@ -218,3 +298,56 @@ def download_challenge_file(request, challenge_id):
         return response
     except FileNotFoundError:
         return JsonResponse({'error': 'File not found'}, status=404)
+
+
+@login_required
+@csrf_exempt
+def view_hint(request, hint_id):
+    """View a hint and deduct points if applicable"""
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'message': 'Invalid request method'})
+    
+    try:
+        hint = get_object_or_404(Hint, id=hint_id)
+        
+        # Check if user's preference allows hints
+        if not request.user.userprofile.show_hints:
+            return JsonResponse({
+                'success': False, 
+                'message': 'Hints are disabled in your settings. Enable them in Settings → Preferences.'
+            })
+        
+        # Check if user already viewed this hint
+        hint_view, created = HintView.objects.get_or_create(
+            user=request.user,
+            hint=hint,
+            defaults={'points_deducted': hint.cost}
+        )
+        
+        if created and hint.cost > 0:
+            # Deduct points from user's profile
+            profile = request.user.userprofile
+            profile.total_score -= hint.cost
+            if profile.total_score < 0:
+                profile.total_score = 0
+            profile.save()
+            
+            return JsonResponse({
+                'success': True,
+                'hint': hint.content,
+                'cost': hint.cost,
+                'message': f'Hint revealed! {hint.cost} points deducted.',
+                'new_score': profile.total_score
+            })
+        else:
+            # Already viewed or free hint
+            return JsonResponse({
+                'success': True,
+                'hint': hint.content,
+                'cost': 0,
+                'message': 'Hint revealed!' if created else 'You already viewed this hint.',
+                'new_score': request.user.userprofile.total_score
+            })
+            
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': f'Error: {str(e)}'})

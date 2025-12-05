@@ -82,6 +82,24 @@ class UserProfile(models.Model):
     profile_photo = models.ImageField(upload_to='profile_photos/', null=True, blank=True)
     bio = models.TextField(max_length=500, null=True, blank=True)
     
+    # Preferences
+    theme = models.CharField(max_length=10, default='dark', choices=[('dark', 'Dark'), ('light', 'Light'), ('auto', 'Auto')])
+    language = models.CharField(max_length=5, default='en')
+    timezone = models.CharField(max_length=50, default='UTC')
+    show_hints = models.BooleanField(default=True)
+    show_on_leaderboard = models.BooleanField(default=True)
+    
+    # Notifications
+    email_new_challenges = models.BooleanField(default=True)
+    email_rank_changes = models.BooleanField(default=True)
+    email_achievements = models.BooleanField(default=False)
+    email_weekly_summary = models.BooleanField(default=False)
+    
+    # Privacy
+    profile_public = models.BooleanField(default=True)
+    show_solved_challenges = models.BooleanField(default=True)
+    show_email_public = models.BooleanField(default=False)
+    
     def __str__(self):
         return f"{self.user.username} - {self.total_score} points"
     

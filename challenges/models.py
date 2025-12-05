@@ -59,3 +59,34 @@ class Challenge(models.Model):
     
     class Meta:
         ordering = ['difficulty', 'points']
+
+
+class Hint(models.Model):
+    """Hints for challenges that users can unlock"""
+    challenge = models.ForeignKey(Challenge, on_delete=models.CASCADE, related_name='hints')
+    content = models.TextField(help_text='The hint text')
+    cost = models.IntegerField(default=0, help_text='Points deducted when viewing this hint (0 for free)')
+    order = models.IntegerField(default=1, help_text='Display order (1, 2, 3...)')
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['order']
+        unique_together = ['challenge', 'order']
+    
+    def __str__(self):
+        return f"Hint {self.order} for {self.challenge.title}"
+
+
+class HintView(models.Model):
+    """Track which users have viewed which hints"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    hint = models.ForeignKey(Hint, on_delete=models.CASCADE)
+    viewed_at = models.DateTimeField(auto_now_add=True)
+    points_deducted = models.IntegerField(default=0)
+    
+    class Meta:
+        unique_together = ['user', 'hint']
+        ordering = ['-viewed_at']
+    
+    def __str__(self):
+        return f"{self.user.username} viewed hint for {self.hint.challenge.title}"

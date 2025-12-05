@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Team - CTF Platform{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/teams.css">
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0"><i class="fas fa-plus"></i> Create New Team</h4>
+        </div>
+        <div class="card-body">
+          {% if pending_requests %}
+          <!-- Show pending requests that need to be cancelled -->
+          <div class="team-alert warning mb-4">
+            <i class="fas fa-exclamation-triangle"></i>
+            <strong>Cannot Create Team</strong>
+            <p class="mb-3">You have pending team join requests. Cancel them first before creating a new team.</p>
+
+            <div class="card">
+              <div class="card-header bg-warning text-dark">
+                <h6 class="mb-0"><i class="fas fa-clock"></i> Your Pending Requests</h6>
+              </div>
+              <div class="card-body p-0">
+                <ul class="list-group list-group-flush">
+                  {% for request in pending_requests %}
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                      <strong>{{ request.team.name }}</strong>
+                      <br>
+                      <small class="text-muted">Requested {{ request.joined_at|timesince }} ago</small>
+                    </div>
+                    <button class="btn btn-sm btn-danger cancel-request-btn" data-team-name="{{ request.team.name }}">
+                      <i class="fas fa-times"></i> Cancel Request
+                    </button>
+                  </li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+          </div>
+          {% else %}
+          <!-- Normal create team form -->
+          <form method="post">
+            {% csrf_token %}
+
+            <div class="mb-3">
+              <label for="team_name" class="form-label">Team Name *</label>
+              <input type="text" class="form-control" id="team_name" name="team_name" required maxlength="100">
+              <small class="form-text text-muted">Choose a unique name for your team</small>
+            </div>
+
+            <div class="mb-3">
+              <label for="description" class="form-label">Description</label>
+              <textarea class="form-control" id="description" name="description" rows="3" maxlength="500"></textarea>
+              <small class="form-text text-muted">Optional: Describe your team</small>
+            </div>
+
+            <div class="team-alert info">
+              <i class="fas fa-info-circle"></i>
+              <strong>Important Rules:</strong>
+              <ul class="mb-0 mt-2">
+                <li>You will become the team captain</li>
+                <li>Teams need at least 2 members to compete</li>
+                <li>You can only be in ONE team at a time</li>
+                <li>You must leave your team before joining another</li>
+              </ul>
+            </div>
+
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-check"></i> Create Team
+              </button>
+              <a href="{% url 'teams:team_list' %}" class="btn btn-secondary">
+                <i class="fas fa-times"></i> Cancel
+              </a>
+            </div>
+          </form>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Cancel join request
+  document.querySelectorAll('.cancel-request-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+      const teamName = this.dataset.teamName;
+
+      if (confirm(`Are you sure you want to cancel your request to join "${teamName}"?`)) {
+        fetch('/teams/cancel-request/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        })
+          .then(response => response.json())
+          .then(data => {
+            alert(data.message);
+            if (data.success) {
+              location.reload();
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while canceling the request.');
+          });
+      }
+    });
+  });
+</script>
+{% endblock %}

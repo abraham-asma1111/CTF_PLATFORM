@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SecureBank - Login</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            width: 400px;
+        }
+        h1 { color: #667eea; text-align: center; margin-bottom: 2rem; }
+        .form-group { margin-bottom: 1.5rem; }
+        label { display: block; margin-bottom: 0.5rem; color: #333; font-weight: bold; }
+        input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        input:focus { border-color: #667eea; outline: none; }
+        button {
+            width: 100%;
+            padding: 1rem;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:hover { background: #5568d3; }
+        .error {
+            background: #fee;
+            border: 1px solid #fcc;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            color: #c33;
+        }
+        .query-debug {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-top: 1rem;
+            font-family: monospace;
+            font-size: 0.9rem;
+            border-left: 4px solid #667eea;
+        }
+        .links { text-align: center; margin-top: 1rem; }
+        .links a { color: #667eea; text-decoration: none; margin: 0 0.5rem; }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1>🏦 SecureBank Login</h1>
+        
+        {% if error %}
+        <div class="error">
+            <strong>❌ Login Failed:</strong> {{ error }}
+        </div>
+        {% endif %}
+        
+        {% if query %}
+        <div class="query-debug">
+            <strong>�� SQL Query:</strong><br>
+            {{ query }}
+        </div>
+        {% endif %}
+        
+        <form method="POST">
+            <div class="form-group">
+                <label>Username:</label>
+                <input type="text" name="username" value="{{ username }}" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Password:</label>
+                <input type="password" name="password" required>
+            </div>
+            
+            <button type="submit">Login</button>
+        </form>
+        
+        <div class="links">
+            <a href="/challenges/sqli/{{ challenge_id }}/">← Back</a> |
+            <a href="/challenges/sqli/{{ challenge_id }}/hints">💡 Hints</a>
+        </div>
+    </div>
+</body>
+</html>

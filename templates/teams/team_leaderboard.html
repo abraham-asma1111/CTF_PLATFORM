@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block title %}Team Leaderboard - CTF Platform{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/teams.css">
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row mb-4">
+    <div class="col-md-8">
+      <h2 class="text-primary">🏆 Team Leaderboard</h2>
+      <p class="text-muted">Top competing teams ranked by score</p>
+    </div>
+    <div class="col-md-4">
+      <div class="team-nav-buttons">
+        <a href="{% url 'teams:team_list' %}" class="btn-team primary">
+          <i class="fas fa-users"></i> All Teams
+        </a>
+        <a href="{% url 'leaderboard:leaderboard' %}" class="btn-team info">
+          <i class="fas fa-user"></i> Individual
+        </a>
+      </div>
+    </div>
+  </div>
+
+  {% if teams %}
+  <div class="team-alert info mb-4">
+    <i class="fas fa-info-circle"></i> <strong>{{ teams|length }}</strong> competing team{{ teams|length|pluralize }}.
+    Teams need at least 2 members to appear on the leaderboard.
+  </div>
+  {% endif %}
+
+  <div class="card leaderboard-table">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-dark">
+            <tr>
+              <th style="width: 80px;">Rank</th>
+              <th>Team Name</th>
+              <th>Captain</th>
+              <th style="width: 100px;">Members</th>
+              <th style="width: 100px;">Score</th>
+              <th style="width: 120px;">Solved</th>
+              <th style="width: 150px;">Last Activity</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for team in teams %}
+            <tr>
+              <td>
+                {% if forloop.counter == 1 %}
+                <span class="rank-badge first">🥇 1st</span>
+                {% elif forloop.counter == 2 %}
+                <span class="rank-badge second">🥈 2nd</span>
+                {% elif forloop.counter == 3 %}
+                <span class="rank-badge third">🥉 3rd</span>
+                {% else %}
+                <span class="rank-badge">#{{ forloop.counter }}</span>
+                {% endif %}
+              </td>
+              <td>
+                <a href="{% url 'teams:team_detail' team.id %}" class="text-decoration-none fw-bold"
+                  style="color: #00ff88;">
+                  🛡️ {{ team.name }}
+                </a>
+              </td>
+              <td>
+                <span class="badge bg-primary">👤 {{ team.captain.username }}</span>
+              </td>
+              <td>
+                <span class="stat-badge members">{{ team.member_count }}/{{ team.max_members }}</span>
+              </td>
+              <td>
+                <strong style="color: #00ff88; font-size: 1.3rem;">{{ team.total_score }}</strong>
+              </td>
+              <td>
+                <span class="stat-badge solved">🚩 {{ team.challenges_solved }}</span>
+              </td>
+              <td>
+                {% if team.last_submission %}
+                <small style="color: #aaa;">{{ team.last_submission|timesince }} ago</small>
+                {% else %}
+                <span class="badge bg-secondary">No activity</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="7" class="text-center py-5">
+                <div class="text-muted">
+                  <i class="fas fa-users fa-3x mb-3"></i>
+                  <h5>No Competing Teams Yet</h5>
+                  <p>Teams need at least 2 members to compete. Create a team and invite members to get started!</p>
+                  <a href="{% url 'teams:create_team' %}" class="btn btn-primary mt-2">
+                    <i class="fas fa-plus"></i> Create Team
+                  </a>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  {% if teams %}
+  <div class="mt-4">
+    <h5>Competition Rules:</h5>
+    <ul class="text-muted">
+      <li>Teams must have at least 2 members to compete</li>
+      <li>Maximum 5 members per team</li>
+      <li>When a team member solves a challenge, points go to the team</li>
+      <li>Each challenge can only be solved once per team</li>
+      <li>Rankings are based on total score, with ties broken by last submission time</li>
+    </ul>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,217 @@
+{% extends 'base.html' %}
+
+{% block title %}JWT Challenge - CTF Platform{% endblock %}
+
+{% block content %}
+<div class="challenge-container">
+  <div class="challenge-header">
+    <h1>🔐 {{ challenge.title }}</h1>
+    <div class="challenge-meta">
+      <span class="difficulty {{ challenge.difficulty }}">{{ challenge.get_difficulty_display }}</span>
+      <span class="category">{{ challenge.get_category_display }}</span>
+      <span class="points">{{ challenge.points }} Points</span>
+    </div>
+  </div>
+
+  <div class="challenge-content">
+    <h2>Challenge Description</h2>
+    <p>{{ challenge.description|linebreaks }}</p>
+
+    <div class="challenge-actions">
+      <a href="{% url 'challenges:jwt_secret' challenge_id %}" class="btn btn-primary">
+        🚀 Access Secret Area
+      </a>
+    </div>
+
+    <div class="flag-submission">
+      <h3>Submit Flag</h3>
+      <form id="flag-form">
+        {% csrf_token %}
+        <div class="form-group">
+          <input type="text" id="flag-input" name="flag" placeholder="CTF{...}" required class="form-control">
+        </div>
+        <button type="submit" class="btn btn-success">Submit Flag</button>
+      </form>
+      <div id="submission-message" style="margin-top: 1rem;"></div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .challenge-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 2rem;
+  }
+
+  .challenge-header {
+    margin-bottom: 2rem;
+  }
+
+  .challenge-header h1 {
+    color: #00ff88;
+    margin-bottom: 1rem;
+  }
+
+  .challenge-meta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .challenge-meta span {
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .difficulty.medium {
+    background: rgba(255, 165, 0, 0.2);
+    color: #ffa500;
+    border: 1px solid #ffa500;
+  }
+
+  .category {
+    background: rgba(0, 255, 136, 0.2);
+    color: #00ff88;
+    border: 1px solid #00ff88;
+  }
+
+  .points {
+    background: rgba(100, 149, 237, 0.2);
+    color: #6495ed;
+    border: 1px solid #6495ed;
+  }
+
+  .challenge-content {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 2rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .challenge-hint {
+    background: rgba(0, 255, 136, 0.1);
+    padding: 1.5rem;
+    border-radius: 6px;
+    border-left: 4px solid #00ff88;
+    margin: 2rem 0;
+  }
+
+  .challenge-hint h3 {
+    color: #00ff88;
+    margin-bottom: 1rem;
+  }
+
+  .challenge-hint ul {
+    margin-left: 1.5rem;
+  }
+
+  .challenge-hint li {
+    margin-bottom: 0.5rem;
+    color: #ccc;
+  }
+
+  .challenge-actions {
+    margin: 2rem 0;
+    text-align: center;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 1rem 2rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-primary {
+    background: #00ff88;
+    color: #000;
+  }
+
+  .btn-primary:hover {
+    background: #00cc6a;
+    transform: translateY(-2px);
+  }
+
+  .btn-success {
+    background: #28a745;
+    color: #fff;
+  }
+
+  .btn-success:hover {
+    background: #218838;
+  }
+
+  .flag-submission {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .flag-submission h3 {
+    color: #00ff88;
+    margin-bottom: 1rem;
+  }
+
+  .form-group {
+    margin-bottom: 1rem;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.3);
+    color: #fff;
+    font-size: 1rem;
+  }
+
+  .form-control:focus {
+    outline: none;
+    border-color: #00ff88;
+  }
+</style>
+
+<script>
+  document.getElementById('flag-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const flag = document.getElementById('flag-input').value.trim();
+    const messageDiv = document.getElementById('submission-message');
+
+    if (!flag) {
+      messageDiv.innerHTML = '<p style="color: #e74c3c;">Please enter a flag</p>';
+      return;
+    }
+
+    try {
+      const response = await fetch('{% url "challenges:submit" challenge_id %}', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({ flag: flag })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        messageDiv.innerHTML = `<p style="color: #00ff88; font-weight: bold;">✓ ${data.message}</p>`;
+        document.getElementById('flag-input').value = '';
+      } else {
+        messageDiv.innerHTML = `<p style="color: #e74c3c;">✗ ${data.message}</p>`;
+      }
+    } catch (error) {
+      messageDiv.innerHTML = '<p style="color: #e74c3c;">Error submitting flag. Please try again.</p>';
+    }
+  });
+</script>
+{% endblock %}

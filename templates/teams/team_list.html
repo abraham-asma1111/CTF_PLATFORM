@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+
+{% block title %}Teams - CTF Platform{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/teams.css">
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row mb-4">
+    <div class="col-md-8">
+      <h2 class="text-primary">🛡️ Teams</h2>
+      <p class="text-muted">Join a team or create your own to compete together</p>
+    </div>
+    <div class="col-md-4">
+      <div class="team-nav-buttons">
+        <a href="{% url 'teams:team_leaderboard' %}" class="btn-team primary">
+          <i class="fas fa-trophy"></i> Leaderboard
+        </a>
+        {% if user_membership %}
+        <a href="{% url 'teams:my_team' %}" class="btn-team success">
+          <i class="fas fa-users"></i> My Team
+        </a>
+        {% else %}
+        <a href="{% url 'teams:create_team' %}" class="btn-team success">
+          <i class="fas fa-plus"></i> Create Team
+        </a>
+        {% endif %}
+      </div>
+    </div>
+    </a>
+  </div>
+</div>
+
+{% if user_membership %}
+<div class="team-alert success">
+  <i class="fas fa-users"></i> You are currently in team: <strong>{{ user_membership.team.name }}</strong>
+  <br>
+  <small>You cannot join or create another team unless you leave your current team.</small>
+</div>
+{% else %}
+<div class="team-alert info">
+  <i class="fas fa-info-circle"></i> You are not in a team yet.
+  <a href="{% url 'teams:my_invitations' %}" class="text-decoration-none" style="color: #00ff88;">
+    <strong>Check your invitations</strong>
+  </a> or create/join a team below.
+
+  {% if pending_requests %}
+  <br><br>
+  <strong>Your pending requests:</strong>
+  <div class="mt-2">
+    {% for request in pending_requests %}
+    <div class="d-inline-flex align-items-center me-3 mb-2">
+      <span class="badge bg-warning text-dark me-2">{{ request.team.name }}</span>
+      <button class="btn btn-sm btn-outline-danger cancel-request-btn" data-team-name="{{ request.team.name }}"
+        title="Cancel request">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endif %}
+
+<div class="row">
+  {% for team in teams %}
+  <div class="col-md-6 mb-4">
+    <div class="card team-card h-100 {% if team.can_compete %}competing{% else %}needs-members{% endif %}">
+      <div class="card-body">
+        <h5 class="card-title">
+          🛡️ {{ team.name }}
+          {% if team.can_compete %}
+          <span class="team-badge competing">✓ Competing</span>
+          {% else %}
+          <span class="team-badge needs-members">⚠ Needs Members</span>
+          {% endif %}
+        </h5>
+        <p class="card-text text-muted">{{ team.description|default:"No description" }}</p>
+
+        <div class="team-stats">
+          <span class="stat-badge members">
+            <i class="fas fa-users"></i> {{ team.member_count }}/{{ team.max_members }}
+          </span>
+          <span class="stat-badge score">
+            <i class="fas fa-star"></i> {{ team.total_score }} pts
+          </span>
+          <span class="stat-badge solved">
+            <i class="fas fa-flag"></i> {{ team.challenges_solved }} solved
+          </span>
+        </div>
+
+        <p class="mb-3">
+          <strong style="color: #00ff88;">Captain:</strong>
+          <span class="badge bg-primary">👤 {{ team.captain.username }}</span>
+        </p>
+
+        <div class="d-flex gap-2 flex-wrap">
+          <a href="{% url 'teams:team_detail' team.id %}" class="btn btn-sm btn-team primary">
+            <i class="fas fa-info-circle"></i> View Details
+          </a>
+
+          {% if not user_membership and not team.is_full and team.captain != user %}
+          <button class="btn btn-sm btn-team success join-team-btn" data-team-id="{{ team.id }}">
+            <i class="fas fa-user-plus"></i> Request to Join
+          </button>
+          {% elif team.is_full %}
+          <button class="btn btn-sm btn-secondary" disabled>
+            <i class="fas fa-lock"></i> Full
+          </button>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12">
+    <div class="alert alert-info">
+      No teams yet. Be the first to create one!
+    </div>
+  </div>
+  {% endfor %}
+</div>
+</div>
+
+<script>
+  document.querySelectorAll('.join-team-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+      const teamId = this.dataset.teamId;
+
+      fetch(`/teams/${teamId}/join/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            alert(data.message);
+            location.reload();
+          } else {
+            alert(data.message);
+          }
+        });
+    });
+  });
+
+  // Cancel join request
+  document.querySelectorAll('.cancel-request-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+      const teamName = this.dataset.teamName;
+
+      if (confirm(`Are you sure you want to cancel your request to join "${teamName}"?`)) {
+        fetch('/teams/cancel-request/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        })
+          .then(response => response.json())
+          .then(data => {
+            alert(data.message);
+            if (data.success) {
+              location.reload();
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while canceling the request.');
+          });
+      }
+    });
+  });
+</script>
+{% endblock %}

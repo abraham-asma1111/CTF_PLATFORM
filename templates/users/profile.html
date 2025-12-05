@@ -39,10 +39,8 @@
     </div>
     <div class="navbar-right">
       <div class="time-display" id="timeDisplay">00:00:00</div>
-      <div class="profile-info" style="text-align: right;">
-        <div class="profile-name">{{ user.first_name }} {{ user.last_name }}</div>
-        <div class="profile-rank">Rank: #{{ user_rank }}</div>
-      </div>
+      <a href="{% url 'users:logout' %}" class="btn-logout"
+        style="background: #e74c3c; color: #fff; padding: 0.6rem 1.5rem; border-radius: 4px; text-decoration: none; font-weight: bold; transition: background 0.3s;">Logout</a>
     </div>
   </div>
 

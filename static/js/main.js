@@ -600,3 +600,18 @@ document.addEventListener('DOMContentLoaded', function () {
 setTimeout(function () {
   initCategoryFilter();
 }, 100);
+
+// Smart Email Handler - Detects device and opens appropriate email interface
+function handleEmailClick() {
+  const email = 'abrahamasmamaw4@gmail.com';
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+  if (isMobile) {
+    // On mobile devices, use mailto to open native mail app
+    window.location.href = `mailto:${email}`;
+  } else {
+    // On desktop, open Gmail in a new tab
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${email}`;
+    window.open(gmailUrl, '_blank');
+  }
+}

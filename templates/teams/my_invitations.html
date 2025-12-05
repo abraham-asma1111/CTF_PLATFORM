@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block title %}My Invitations - CTF Platform{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/teams.css">
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row mb-4">
+    <div class="col-md-8">
+      <h2 class="text-primary">📧 My Team Invitations</h2>
+      <p class="text-muted">Pending invitations from teams</p>
+    </div>
+    <div class="col-md-4 text-end">
+      <a href="{% url 'teams:team_list' %}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Teams
+      </a>
+    </div>
+  </div>
+
+  {% if invitations %}
+  <div class="row">
+    {% for invitation in invitations %}
+    <div class="col-md-6 mb-4">
+      <div class="invitation-card card">
+        <div class="card-header">
+          <h5 class="mb-0">🛡️ {{ invitation.team.name }}</h5>
+        </div>
+        <div class="card-body">
+          <p><strong>From:</strong> {{ invitation.from_user.username }} (Captain: {{ invitation.team.captain.username
+            }})</p>
+          <p><strong>Team Members:</strong> {{ invitation.team.member_count }}/{{ invitation.team.max_members }}</p>
+          <p><strong>Team Score:</strong> {{ invitation.team.total_score }} points</p>
+
+          {% if invitation.message %}
+          <div class="alert alert-info">
+            <strong>Message:</strong> {{ invitation.message }}
+          </div>
+          {% endif %}
+
+          <p class="text-muted"><small>Invited {{ invitation.created_at|timesince }} ago</small></p>
+
+          <div class="d-grid gap-2">
+            <button class="btn btn-success accept-btn" data-invitation-id="{{ invitation.id }}">
+              <i class="fas fa-check"></i> Accept Invitation
+            </button>
+            <button class="btn btn-danger decline-btn" data-invitation-id="{{ invitation.id }}">
+              <i class="fas fa-times"></i> Decline
+            </button>
+            <a href="{% url 'teams:team_detail' invitation.team.id %}" class="btn btn-outline-primary">
+              <i class="fas fa-info-circle"></i> View Team Details
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="alert alert-info">
+    <i class="fas fa-inbox"></i> No pending invitations. Browse teams and request to join, or wait for invitations!
+  </div>
+  {% endif %}
+</div>
+
+<script>
+  // Accept invitation
+  document.querySelectorAll('.accept-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+      const invitationId = this.dataset.invitationId;
+
+      if (confirm('Accept this team invitation?')) {
+        fetch(`/teams/invitation/${invitationId}/accept/`, {
+          method: 'POST'
+        })
+          .then(response => response.json())
+          .then(data => {
+            alert(data.message);
+            if (data.success) {
+              window.location.href = `/teams/${data.team_id}/`;
+            }
+          });
+      }
+    });
+  });
+
+  // Decline invitation
+  document.querySelectorAll('.decline-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+      const invitationId = this.dataset.invitationId;
+
+      if (confirm('Decline this invitation?')) {
+        fetch(`/teams/invitation/${invitationId}/decline/`, {
+          method: 'POST'
+        })
+          .then(response => response.json())
+          .then(data => {
+            alert(data.message);
+            if (data.success) location.reload();
+          });
+      }
+    });
+  });
+</script>
+{% endblock %}

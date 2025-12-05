@@ -1,0 +1,299 @@
+{% extends 'base.html' %}
+
+{% block title %}Settings - CTF Platform{% endblock %}
+
+{% block content %}
+<div class="settings-wrapper" style="max-width: 900px; margin: 2rem auto; padding: 2rem;">
+  <!-- Settings Header -->
+  <div style="margin-bottom: 2rem;">
+    <h1 style="color: #00ff88; margin-bottom: 0.5rem;">⚙️ Settings</h1>
+    <p style="color: #999;">Manage your account and preferences</p>
+  </div>
+
+  <!-- Settings Tabs -->
+  <div class="settings-tabs"
+    style="display: flex; gap: 1rem; margin-bottom: 2rem; border-bottom: 2px solid rgba(255,255,255,0.1);">
+    <button class="tab-btn active" onclick="showTab('security')"
+      style="padding: 1rem 1.5rem; background: none; border: none; color: #fff; cursor: pointer; border-bottom: 3px solid #00ff88; font-weight: bold;">
+      🔒 Security
+    </button>
+    <button class="tab-btn" onclick="showTab('preferences')"
+      style="padding: 1rem 1.5rem; background: none; border: none; color: #999; cursor: pointer; border-bottom: 3px solid transparent; font-weight: bold;">
+      🎨 Preferences
+    </button>
+    <button class="tab-btn" onclick="showTab('notifications')"
+      style="padding: 1rem 1.5rem; background: none; border: none; color: #999; cursor: pointer; border-bottom: 3px solid transparent; font-weight: bold;">
+      🔔 Notifications
+    </button>
+    <button class="tab-btn" onclick="showTab('privacy')"
+      style="padding: 1rem 1.5rem; background: none; border: none; color: #999; cursor: pointer; border-bottom: 3px solid transparent; font-weight: bold;">
+      🛡️ Privacy
+    </button>
+  </div>
+
+  <!-- Security Tab -->
+  <div id="security-tab" class="tab-content">
+    <!-- Change Password -->
+    <div class="settings-card"
+      style="background: rgba(0,0,0,0.4); padding: 2rem; border-radius: 8px; margin-bottom: 1.5rem; border-left: 4px solid #00ff88;">
+      <h2 style="color: #00ff88; margin-bottom: 1rem;">Change Password</h2>
+      <form method="post" action="{% url 'users:change_password' %}">
+        {% csrf_token %}
+        <div class="form-group">
+          <label class="form-label">Current Password:</label>
+          <input type="password" name="old_password" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">New Password:</label>
+          <input type="password" name="new_password1" class="form-control" required>
+          <small style="color: #666; display: block; margin-top: 0.5rem;">
+            Password must be at least 8 characters long
+          </small>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirm New Password:</label>
+          <input type="password" name="new_password2" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Update Password</button>
+      </form>
+    </div>
+
+    <!-- Two-Factor Authentication -->
+    <div class="settings-card"
+      style="background: rgba(0,0,0,0.4); padding: 2rem; border-radius: 8px; margin-bottom: 1.5rem; border-left: 4px solid #FFD700;">
+      <h2 style="color: #FFD700; margin-bottom: 1rem;">Two-Factor Authentication</h2>
+      <p style="color: #999; margin-bottom: 1rem;">Add an extra layer of security to your account</p>
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div>
+          <p style="color: #fff; font-weight: bold;">Status: <span style="color: #e74c3c;">Disabled</span></p>
+          <small style="color: #666;">Coming soon - Enable 2FA for enhanced security</small>
+        </div>
+        <button class="btn" style="background: #666; cursor: not-allowed;" disabled>Enable 2FA</button>
+      </div>
+    </div>
+
+    <!-- Active Sessions -->
+    <div class="settings-card"
+      style="background: rgba(0,0,0,0.4); padding: 2rem; border-radius: 8px; border-left: 4px solid #3498db;">
+      <h2 style="color: #3498db; margin-bottom: 1rem;">Active Sessions</h2>
+      <p style="color: #999; margin-bottom: 1rem;">Manage your active login sessions</p>
+      <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 4px; margin-bottom: 0.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <p style="color: #fff; font-weight: bold;">🖥️ Current Session</p>
+            <small style="color: #666;">Last active: Just now</small>
+          </div>
+          <span style="color: #00ff88; font-size: 0.8rem;">● Active</span>
+        </div>
+      </div>
+      <button class="btn" style="background: #e74c3c; color: #fff; margin-top: 1rem;">Logout All Other Sessions</button>
+    </div>
+  </div>
+
+  <!-- Preferences Tab -->
+  <div id="preferences-tab" class="tab-content" style="display: none;">
+    <div class="settings-card"
+      style="background: rgba(0,0,0,0.4); padding: 2rem; border-radius: 8px; margin-bottom: 1.5rem; border-left: 4px solid #9370db;">
+      <h2 style="color: #9370db; margin-bottom: 1rem;">Display Preferences</h2>
+      <form method="post" action="{% url 'users:update_preferences' %}">
+        {% csrf_token %}
+
+        <div class="form-group">
+          <label class="form-label">Theme:</label>
+          <select name="theme" class="form-control">
+            <option value="dark" {% if profile.theme == 'dark' %}selected{% endif %}>Dark Mode (Default)</option>
+            <option value="light" {% if profile.theme == 'light' %}selected{% endif %}>Light Mode (Coming Soon)</option>
+            <option value="auto" {% if profile.theme == 'auto' %}selected{% endif %}>Auto (System)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Language:</label>
+          <select name="language" class="form-control">
+            <option value="en" {% if profile.language == 'en' %}selected{% endif %}>English</option>
+            <option value="es" {% if profile.language == 'es' %}selected{% endif %}>Español</option>
+            <option value="fr" {% if profile.language == 'fr' %}selected{% endif %}>Français</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Timezone:</label>
+          <select name="timezone" class="form-control">
+            <option value="UTC" {% if profile.timezone == 'UTC' %}selected{% endif %}>UTC</option>
+            <option value="America/New_York" {% if profile.timezone == 'America/New_York' %}selected{% endif %}>Eastern
+              Time (ET)</option>
+            <option value="America/Los_Angeles" {% if profile.timezone == 'America/Los_Angeles' %}selected{% endif %}>
+              Pacific Time (PT)</option>
+            <option value="Europe/London" {% if profile.timezone == 'Europe/London' %}selected{% endif %}>London (GMT)
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+            <input type="checkbox" name="show_hints" {% if profile.show_hints %}checked{% endif %}>
+            <span>Show challenge hints</span>
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+            <input type="checkbox" name="show_leaderboard" {% if profile.show_on_leaderboard %}checked{% endif %}>
+            <span>Show my profile on leaderboard</span>
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save Preferences</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Notifications Tab -->
+  <div id="notifications-tab" class="tab-content" style="display: none;">
+    <div class="settings-card"
+      style="background: rgba(0,0,0,0.4); padding: 2rem; border-radius: 8px; border-left: 4px solid #ffa500;">
+      <h2 style="color: #ffa500; margin-bottom: 1rem;">Email Notifications</h2>
+      <form method="post" action="{% url 'users:update_notifications' %}">
+        {% csrf_token %}
+
+        <div class="form-group">
+          <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; margin-bottom: 1rem;">
+            <input type="checkbox" name="email_new_challenges" {% if profile.email_new_challenges %}checked{% endif %}>
+            <div>
+              <div style="color: #fff; font-weight: bold;">New Challenges</div>
+              <small style="color: #666;">Get notified when new challenges are released</small>
+            </div>
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; margin-bottom: 1rem;">
+            <input type="checkbox" name="email_rank_changes" {% if profile.email_rank_changes %}checked{% endif %}>
+            <div>
+              <div style="color: #fff; font-weight: bold;">Rank Changes</div>
+              <small style="color: #666;">Get notified when your rank changes</small>
+            </div>
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; margin-bottom: 1rem;">
+            <input type="checkbox" name="email_achievements" {% if profile.email_achievements %}checked{% endif %}>
+            <div>
+              <div style="color: #fff; font-weight: bold;">Achievements</div>
+              <small style="color: #666;">Get notified when you unlock achievements</small>
+            </div>
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; margin-bottom: 1rem;">
+            <input type="checkbox" name="email_weekly_summary" {% if profile.email_weekly_summary %}checked{% endif %}>
+            <div>
+              <div style="color: #fff; font-weight: bold;">Weekly Summary</div>
+              <small style="color: #666;">Receive a weekly summary of your progress</small>
+            </div>
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save Notification Settings</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Privacy Tab -->
+  <div id="privacy-tab" class="tab-content" style="display: none;">
+    <div class="settings-card"
+      style="background: rgba(0,0,0,0.4); padding: 2rem; border-radius: 8px; margin-bottom: 1.5rem; border-left: 4px solid #e74c3c;">
+      <h2 style="color: #e74c3c; margin-bottom: 1rem;">Privacy Settings</h2>
+      <form method="post" action="{% url 'users:update_privacy' %}">
+        {% csrf_token %}
+
+        <div class="form-group">
+          <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; margin-bottom: 1rem;">
+            <input type="checkbox" name="profile_public" {% if profile.profile_public %}checked{% endif %}>
+            <div>
+              <div style="color: #fff; font-weight: bold;">Public Profile</div>
+              <small style="color: #666;">Allow others to view your profile</small>
+            </div>
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; margin-bottom: 1rem;">
+            <input type="checkbox" name="show_solved_challenges" {% if profile.show_solved_challenges %}checked{% endif
+              %}>
+            <div>
+              <div style="color: #fff; font-weight: bold;">Show Solved Challenges</div>
+              <small style="color: #666;">Display challenges you've solved on your profile</small>
+            </div>
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; margin-bottom: 1rem;">
+            <input type="checkbox" name="show_email" {% if profile.show_email_public %}checked{% endif %}>
+            <div>
+              <div style="color: #fff; font-weight: bold;">Show Email</div>
+              <small style="color: #666;">Make your email visible to other users</small>
+            </div>
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save Privacy Settings</button>
+      </form>
+    </div>
+
+    <!-- Danger Zone -->
+    <div class="settings-card"
+      style="background: rgba(231,76,60,0.1); padding: 2rem; border-radius: 8px; border: 2px solid #e74c3c;">
+      <h2 style="color: #e74c3c; margin-bottom: 1rem;">⚠️ Danger Zone</h2>
+      <p style="color: #999; margin-bottom: 1.5rem;">These actions are irreversible. Please be careful.</p>
+
+      <div
+        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 4px;">
+        <div>
+          <p style="color: #fff; font-weight: bold;">Delete Account</p>
+          <small style="color: #666;">Permanently delete your account and all data</small>
+        </div>
+        <button class="btn" style="background: #e74c3c; color: #fff;" onclick="confirmDelete()">Delete Account</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Back Button -->
+  <div style="margin-top: 2rem; text-align: center;">
+    <a href="{% url 'users:profile' %}" class="btn" style="background: #666;">← Back to Profile</a>
+  </div>
+</div>
+
+<script>
+  function showTab(tabName) {
+    // Hide all tabs
+    document.querySelectorAll('.tab-content').forEach(tab => {
+      tab.style.display = 'none';
+    });
+
+    // Remove active class from all buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.style.color = '#999';
+      btn.style.borderBottom = '3px solid transparent';
+    });
+
+    // Show selected tab
+    document.getElementById(tabName + '-tab').style.display = 'block';
+
+    // Add active class to clicked button
+    event.target.style.color = '#fff';
+    event.target.style.borderBottom = '3px solid #00ff88';
+  }
+
+  function confirmDelete() {
+    if (confirm('Are you sure you want to delete your account? This action cannot be undone!')) {
+      if (confirm('This will permanently delete all your data, progress, and achievements. Are you absolutely sure?')) {
+        window.location.href = '{% url "users:delete_account" %}';
+      }
+    }
+  }
+</script>
+{% endblock %}

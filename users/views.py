@@ -13,9 +13,11 @@ from challenges.models import Challenge
 from django.contrib.auth.models import User
 
 def custom_login(request):
-    """Custom login view with email verification check"""
+    """Custom login view with email verification check and reCAPTCHA"""
+    from .forms import CustomLoginForm
+    
     if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
+        form = CustomLoginForm(request, data=request.POST)
         if form.is_valid():
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
@@ -35,9 +37,9 @@ def custom_login(request):
                 messages.success(request, f'Welcome back, {username}!')
                 return redirect('home')
         else:
-            messages.error(request, 'Invalid username or password.')
+            messages.error(request, 'Invalid username, password, or reCAPTCHA verification failed.')
     else:
-        form = AuthenticationForm()
+        form = CustomLoginForm()
     
     return render(request, 'users/login.html', {'form': form})
 
@@ -636,3 +638,104 @@ def edit_profile(request):
         form = ProfileEditForm(instance=profile, user=request.user)
     
     return render(request, 'users/edit_profile.html', {'form': form, 'profile': profile})
+
+
+
+@login_required
+def settings(request):
+    """User settings page"""
+    profile = request.user.userprofile
+    context = {
+        'profile': profile,
+    }
+    return render(request, 'users/settings.html', context)
+
+
+@login_required
+def change_password(request):
+    """Change user password"""
+    from django.contrib.auth import update_session_auth_hash
+    from django.contrib.auth.forms import PasswordChangeForm
+    
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)  # Keep user logged in
+            messages.success(request, 'Password changed successfully!')
+            return redirect('users:settings')
+        else:
+            for error in form.errors.values():
+                messages.error(request, error)
+    
+    return redirect('users:settings')
+
+
+@login_required
+def update_preferences(request):
+    """Update user preferences"""
+    if request.method == 'POST':
+        profile = request.user.userprofile
+        
+        # Update preferences in database
+        profile.theme = request.POST.get('theme', 'dark')
+        profile.language = request.POST.get('language', 'en')
+        profile.timezone = request.POST.get('timezone', 'UTC')
+        profile.show_hints = 'show_hints' in request.POST
+        profile.show_on_leaderboard = 'show_leaderboard' in request.POST
+        profile.save()
+        
+        messages.success(request, 'Preferences updated successfully!')
+    
+    return redirect('users:settings')
+
+
+@login_required
+def update_notifications(request):
+    """Update notification settings"""
+    if request.method == 'POST':
+        profile = request.user.userprofile
+        
+        # Update notification preferences in database
+        profile.email_new_challenges = 'email_new_challenges' in request.POST
+        profile.email_rank_changes = 'email_rank_changes' in request.POST
+        profile.email_achievements = 'email_achievements' in request.POST
+        profile.email_weekly_summary = 'email_weekly_summary' in request.POST
+        profile.save()
+        
+        messages.success(request, 'Notification settings updated successfully!')
+    
+    return redirect('users:settings')
+
+
+@login_required
+def update_privacy(request):
+    """Update privacy settings"""
+    if request.method == 'POST':
+        profile = request.user.userprofile
+        
+        # Update privacy preferences in database
+        profile.profile_public = 'profile_public' in request.POST
+        profile.show_solved_challenges = 'show_solved_challenges' in request.POST
+        profile.show_email_public = 'show_email' in request.POST
+        profile.save()
+        
+        messages.success(request, 'Privacy settings updated successfully!')
+    
+    return redirect('users:settings')
+
+
+@login_required
+def delete_account(request):
+    """Delete user account"""
+    if request.method == 'POST' or request.method == 'GET':
+        user = request.user
+        username = user.username
+        
+        # Delete user account
+        user.delete()
+        
+        messages.success(request, f'Account {username} has been permanently deleted.')
+        return redirect('home')
+    
+    return redirect('users:settings')

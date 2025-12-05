@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SQL Injection - Hints</title>
+    <style>
+        body { font-family: Arial; background: #1a1a1a; color: #fff; padding: 2rem; }
+        .container { max-width: 800px; margin: 0 auto; }
+        h1 { color: #00ff88; margin-bottom: 2rem; }
+        .hint { background: rgba(255,255,255,0.1); padding: 1.5rem; margin: 1rem 0; border-radius: 8px; border-left: 4px solid #00ff88; }
+        .hint h3 { color: #00ff88; margin-bottom: 0.5rem; }
+        .hint p { line-height: 1.6; }
+        code { background: rgba(0,0,0,0.3); padding: 0.25rem 0.5rem; border-radius: 3px; color: #ff6b6b; }
+        .btn { display: inline-block; padding: 0.75rem 1.5rem; background: #00ff88; color: #000; text-decoration: none; border-radius: 5px; margin: 1rem 0.5rem 0 0; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💡 SQL Injection Hints</h1>
+        
+        {% for hint in hints %}
+        <div class="hint">
+            <h3>{{ hint.level }}</h3>
+            <p>{{ hint.hint }}</p>
+        </div>
+        {% endfor %}
+        
+        <div class="hint">
+            <h3>Common SQL Injection Payloads</h3>
+            <p><code>admin' OR '1'='1' --</code></p>
+            <p><code>admin' OR 1=1 --</code></p>
+            <p><code>' OR '1'='1</code></p>
+            <p><code>admin'--</code></p>
+        </div>
+        
+        <a href="/challenges/sqli/{{ challenge_id }}/login" class="btn">Try Login</a>
+        <a href="/challenges/sqli/{{ challenge_id }}/" class="btn">Back to Home</a>
+    </div>
+</body>
+</html>

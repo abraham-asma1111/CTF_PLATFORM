@@ -1,0 +1,368 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage {{ team.name }} - CTF Platform{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/teams.css">
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row mb-4">
+    <div class="col-md-8">
+      <h2 class="text-primary">⚙️ Manage Team: {{ team.name }}</h2>
+      <p class="text-muted">Captain dashboard for team management</p>
+    </div>
+    <div class="col-md-4">
+      <div class="team-nav-buttons">
+        <a href="{% url 'teams:team_detail' team.id %}" class="btn-team primary">
+          <i class="fas fa-arrow-left"></i> Back to Team
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Team Stats -->
+  <div class="team-management-stats">
+    <div class="row">
+      <div class="col-md-3 col-sm-6 mb-4">
+        <div class="team-stat-card members">
+          <h3>{{ team.member_count }}</h3>
+          <p class="text-muted mb-0">Active Members</p>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6 mb-4">
+        <div class="team-stat-card score">
+          <h3>{{ team.total_score }}</h3>
+          <p class="text-muted mb-0">Total Score</p>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6 mb-4">
+        <div class="team-stat-card solved">
+          <h3>{{ team.challenges_solved }}</h3>
+          <p class="text-muted mb-0">Challenges Solved</p>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6 mb-4">
+        <div class="team-stat-card max">
+          <h3>{{ team.max_members }}</h3>
+          <p class="text-muted mb-0">Max Capacity</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row management-section">
+    <!-- Current Members -->
+    <div class="col-lg-6 mb-4">
+      <div class="card member-list">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0"><i class="fas fa-users"></i> Team Members ({{ members.count }})</h5>
+        </div>
+        <div class="card-body p-0">
+          <ul class="list-group list-group-flush">
+            {% for membership in members %}
+            <li class="management-list-item d-flex justify-content-between align-items-center">
+              <div>
+                <strong style="font-size: 1.1rem;">{{ membership.user.username }}</strong>
+                {% if membership.user == team.captain %}
+                <span class="badge bg-warning text-dark ms-2">👑 Captain</span>
+                {% endif %}
+                <br>
+                <small class="text-muted">Joined {{ membership.joined_at|timesince }} ago</small>
+              </div>
+              <div class="btn-group">
+                {% if membership.user != team.captain %}
+                <button class="btn btn-sm btn-warning transfer-captain-btn" data-user-id="{{ membership.user.id }}"
+                  data-username="{{ membership.user.username }}" title="Make Captain">
+                  <i class="fas fa-crown"></i>
+                </button>
+                <button class="btn btn-sm btn-danger remove-member-btn" data-membership-id="{{ membership.id }}"
+                  data-username="{{ membership.user.username }}" title="Remove Member">
+                  <i class="fas fa-user-times"></i>
+                </button>
+                {% else %}
+                <span class="badge bg-success fs-6">You</span>
+                {% endif %}
+              </div>
+            </li>
+            {% empty %}
+            <li class="list-group-item text-muted">No members yet</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Invite Members -->
+    <div class="col-md-6 mb-4">
+      <div class="card">
+        <div class="card-header bg-success text-white">
+          <h5 class="mb-0"><i class="fas fa-envelope"></i> Invite New Members</h5>
+        </div>
+        <div class="card-body invite-form">
+          <form id="invite-form">
+            <div class="mb-3">
+              <label for="invite-email" class="form-label">User Email</label>
+              <input type="email" class="form-control" id="invite-email" placeholder="user@example.com" required>
+              <small class="form-text text-muted">Enter the email of a registered user</small>
+            </div>
+            <div class="mb-3">
+              <label for="invite-message" class="form-label">Personal Message (Optional)</label>
+              <textarea class="form-control" id="invite-message" rows="3"
+                placeholder="Join our team and let's compete together!"></textarea>
+            </div>
+            <button type="submit" class="btn btn-success w-100">
+              <i class="fas fa-paper-plane"></i> Send Invitation
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Pending Join Requests -->
+    {% if pending_requests %}
+    <div class="col-md-6 mb-4">
+      <div class="card">
+        <div class="card-header bg-warning text-dark">
+          <h5 class="mb-0"><i class="fas fa-clock"></i> Pending Join Requests ({{ pending_requests.count }})</h5>
+        </div>
+        <div class="card-body p-0">
+          <ul class="list-group list-group-flush">
+            {% for request in pending_requests %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <div>
+                <strong>{{ request.user.username }}</strong>
+                <br>
+                <small class="text-muted">Requested {{ request.joined_at|timesince }} ago</small>
+              </div>
+              <div class="btn-group">
+                <button class="btn btn-sm btn-success approve-btn" data-membership-id="{{ request.id }}">
+                  <i class="fas fa-check"></i> Approve
+                </button>
+                <button class="btn btn-sm btn-danger reject-btn" data-membership-id="{{ request.id }}">
+                  <i class="fas fa-times"></i> Reject
+                </button>
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Sent Invitations -->
+    {% if sent_invitations %}
+    <div class="col-md-6 mb-4">
+      <div class="card">
+        <div class="card-header bg-info text-white">
+          <h5 class="mb-0"><i class="fas fa-paper-plane"></i> Sent Invitations ({{ sent_invitations.count }})</h5>
+        </div>
+        <div class="card-body p-0">
+          <ul class="list-group list-group-flush">
+            {% for invitation in sent_invitations %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <div>
+                <strong>{{ invitation.to_user.username }}</strong>
+                <br>
+                <small class="text-muted">Sent {{ invitation.created_at|timesince }} ago</small>
+                {% if invitation.message %}
+                <br>
+                <small class="text-info">"{{ invitation.message|truncatechars:50 }}"</small>
+                {% endif %}
+              </div>
+              <button class="btn btn-sm btn-outline-danger cancel-invitation-btn"
+                data-invitation-id="{{ invitation.id }}" data-username="{{ invitation.to_user.username }}">
+                <i class="fas fa-times"></i> Cancel
+              </button>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Danger Zone -->
+  <div class="danger-zone">
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header text-white">
+            <h5 class="mb-0"><i class="fas fa-exclamation-triangle"></i> Danger Zone</h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <h6 class="text-danger">Leave Team</h6>
+                <p class="text-muted mb-3">Leave the team. You must transfer captaincy first if there are other members.
+                </p>
+                <button class="btn btn-outline-danger" id="leave-team-btn">
+                  <i class="fas fa-sign-out-alt"></i> Leave Team
+                </button>
+              </div>
+              <div class="col-md-6 mb-3">
+                <h6 class="text-danger">Disband Team</h6>
+                <p class="text-muted mb-3">Permanently delete the team. This action cannot be undone.</p>
+                <button class="btn btn-danger" id="disband-team-btn" disabled>
+                  <i class="fas fa-trash"></i> Disband Team (Coming Soon)
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Send invitation
+  const inviteForm = document.getElementById('invite-form');
+  if (inviteForm) {
+    inviteForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const email = document.getElementById('invite-email').value;
+      const message = document.getElementById('invite-message').value;
+
+      fetch(`/teams/{{ team.id }}/invite/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email,
+          message: message
+        })
+      })
+        .then(response => response.json())
+        .then(data => {
+          alert(data.message);
+          if (data.success) {
+            document.getElementById('invite-email').value = '';
+            document.getElementById('invite-message').value = '';
+            location.reload();
+          }
+        });
+    });
+  }
+
+  // Remove member
+  document.querySelectorAll('.remove-member-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+      const membershipId = this.dataset.membershipId;
+      const username = this.dataset.username;
+
+      if (confirm(`Are you sure you want to remove ${username} from the team?`)) {
+        fetch(`/teams/membership/${membershipId}/remove/`, {
+          method: 'POST'
+        })
+          .then(response => response.json())
+          .then(data => {
+            alert(data.message);
+            if (data.success) location.reload();
+          });
+      }
+    });
+  });
+
+  // Transfer captaincy
+  document.querySelectorAll('.transfer-captain-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+      const userId = this.dataset.userId;
+      const username = this.dataset.username;
+
+      if (confirm(`Are you sure you want to transfer captaincy to ${username}? You will no longer be the captain.`)) {
+        fetch(`/teams/{{ team.id }}/transfer-captaincy/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            new_captain_id: userId
+          })
+        })
+          .then(response => response.json())
+          .then(data => {
+            alert(data.message);
+            if (data.success) {
+              window.location.href = `/teams/{{ team.id }}/`;
+            }
+          });
+      }
+    });
+  });
+
+  // Approve member
+  document.querySelectorAll('.approve-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+      const membershipId = this.dataset.membershipId;
+      fetch(`/teams/membership/${membershipId}/approve/`, {
+        method: 'POST'
+      })
+        .then(response => response.json())
+        .then(data => {
+          alert(data.message);
+          if (data.success) location.reload();
+        });
+    });
+  });
+
+  // Reject member
+  document.querySelectorAll('.reject-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+      const membershipId = this.dataset.membershipId;
+      fetch(`/teams/membership/${membershipId}/reject/`, {
+        method: 'POST'
+      })
+        .then(response => response.json())
+        .then(data => {
+          alert(data.message);
+          if (data.success) location.reload();
+        });
+    });
+  });
+
+  // Cancel invitation
+  document.querySelectorAll('.cancel-invitation-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+      const invitationId = this.dataset.invitationId;
+      const username = this.dataset.username;
+
+      if (confirm(`Cancel invitation to ${username}?`)) {
+        fetch(`/teams/invitation/${invitationId}/cancel/`, {
+          method: 'POST'
+        })
+          .then(response => response.json())
+          .then(data => {
+            alert(data.message);
+            if (data.success) location.reload();
+          });
+      }
+    });
+  });
+
+  // Leave team
+  const leaveBtn = document.getElementById('leave-team-btn');
+  if (leaveBtn) {
+    leaveBtn.addEventListener('click', function () {
+      if (confirm('Are you sure you want to leave this team? If you are the captain and there are other members, you must transfer captaincy first.')) {
+        fetch('/teams/leave/', {
+          method: 'POST'
+        })
+          .then(response => response.json())
+          .then(data => {
+            alert(data.message);
+            if (data.success) {
+              window.location.href = '/teams/';
+            }
+          });
+      }
+    });
+  }
+</script>
+{% endblock %}

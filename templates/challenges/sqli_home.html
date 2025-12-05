@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>{{ title }}</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      background: white;
+      padding: 3rem;
+      border-radius: 10px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      max-width: 600px;
+      text-align: center;
+    }
+
+    h1 {
+      color: #667eea;
+      margin-bottom: 1rem;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 2rem;
+      font-size: 1.1rem;
+    }
+
+    .description {
+      text-align: left;
+      background: #f8f9fa;
+      padding: 1.5rem;
+      border-radius: 5px;
+      margin-bottom: 2rem;
+      border-left: 4px solid #667eea;
+    }
+
+    .description h3 {
+      color: #333;
+      margin-bottom: 1rem;
+    }
+
+    .description ul {
+      margin-left: 1.5rem;
+      color: #555;
+    }
+
+    .description li {
+      margin-bottom: 0.5rem;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 1rem 2rem;
+      background: #667eea;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+      margin: 0.5rem;
+      transition: background 0.3s;
+    }
+
+    .btn:hover {
+      background: #5568d3;
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+    }
+
+    .btn-secondary:hover {
+      background: #5a6268;
+    }
+
+    .warning {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      padding: 1rem;
+      border-radius: 5px;
+      margin-bottom: 2rem;
+      color: #856404;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>🏦 {{ title }}</h1>
+    <p class="subtitle">SQL Injection Challenge</p>
+
+    <div class="warning">
+      ⚠️ <strong>Educational Purpose Only</strong><br>
+      This is a deliberately vulnerable application for learning purposes.
+    </div>
+
+    <div class="description">
+      <h3>Challenge Objective:</h3>
+      <ul>
+        <li>Exploit the SQL injection vulnerability in the login form</li>
+        <li>Bypass authentication to access the admin account</li>
+        <li>Extract the hidden flag from the database</li>
+        <li>Learn about SQL injection attacks and prevention</li>
+      </ul>
+    </div>
+
+    <div class="description">
+      <h3>Getting Started:</h3>
+      <ul>
+        <li>Click "Start Challenge" to access the vulnerable login page</li>
+        <li>Try different SQL injection payloads</li>
+        <li>Use hints if you get stuck</li>
+        <li>View the source code to understand the vulnerability</li>
+      </ul>
+    </div>
+
+    <div>
+      <a href="/challenges/sqli/{{ challenge_id }}/login" class="btn">🚀 Start Challenge</a>
+      <a href="/challenges/sqli/{{ challenge_id }}/hints" class="btn btn-secondary">💡 View Hints</a>
+    </div>
+
+    <div style="margin-top: 2rem;">
+      <a href="/challenges/sqli/{{ challenge_id }}/source" class="btn btn-secondary">📄 View Source Code</a>
+      <a href="/challenges/sqli/{{ challenge_id }}/reset" class="btn btn-secondary">🔄 Reset Database</a>
+    </div>
+
+    <div style="margin-top: 2rem;">
+      <a href="/challenges/" style="color: #667eea; text-decoration: none;">← Back to Challenges</a>
+    </div>
+  </div>
+</body>
+
+</html>

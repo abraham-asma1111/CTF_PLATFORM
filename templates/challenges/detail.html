@@ -25,6 +25,18 @@
     <p>{{ challenge.description|linebreaks }}</p>
   </div>
 
+  {% if challenge.title == "just fun" or "jwt" in challenge.title.lower %}
+  <div class="web-challenge-link"
+    style="margin-top: 2rem; padding: 1.5rem; background: rgba(100, 149, 237, 0.1); border: 2px solid #6495ed; border-radius: 8px;">
+    <h3 style="color: #6495ed;">🌐 Launch Web Challenge</h3>
+    <p style="color: #ccc; margin-bottom: 1rem;">This is an interactive web challenge. Click below to start:</p>
+    <a href="{% url 'challenges:jwt_home' challenge.id %}" class="btn btn-primary"
+      style="background: #6495ed; color: #fff; padding: 1rem 2rem; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: 600;">
+      🚀 Start Challenge
+    </a>
+  </div>
+  {% endif %}
+
   {% if challenge.challenge_file %}
   <div class="challenge-file"
     style="margin-top: 2rem; padding: 1rem; background: rgba(0, 255, 136, 0.1); border: 2px solid #00ff88; border-radius: 8px;">
@@ -33,6 +45,50 @@
     <a href="{% url 'challenges:download' challenge.id %}" class="btn btn-primary" style="margin-top: 0.5rem;">
       ⬇️ Download File
     </a>
+  </div>
+  {% endif %}
+
+  {% if show_hints and hints %}
+  <div class="hints-section"
+    style="margin-top: 2rem; padding: 1rem; background: rgba(243, 156, 18, 0.1); border: 2px solid #f39c12; border-radius: 8px;">
+    <h3 style="color: #f39c12;">💡 Hints Available</h3>
+    <p style="color: #999; margin-bottom: 1rem;">Need help? Click to reveal hints (may cost points)</p>
+
+    {% for hint in hints %}
+    <div class="hint-item" style="margin-bottom: 1rem; padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 4px;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <strong style="color: #f39c12;">Hint {{ hint.order }}</strong>
+        {% if hint.id in viewed_hints %}
+        <span style="color: #2ecc71;">✓ Viewed</span>
+        {% else %}
+        {% if hint.cost > 0 %}
+        <span style="color: #e74c3c;">Cost: {{ hint.cost }} points</span>
+        {% else %}
+        <span style="color: #2ecc71;">Free</span>
+        {% endif %}
+        {% endif %}
+      </div>
+
+      <div id="hint-content-{{ hint.id }}" style="margin-top: 0.5rem;">
+        {% if hint.id in viewed_hints %}
+        <p style="color: #fff; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 4px;">{{ hint.content
+          }}</p>
+        {% else %}
+        <button class="btn view-hint-btn" data-hint-id="{{ hint.id }}" data-cost="{{ hint.cost }}"
+          style="background: #f39c12; margin-top: 0.5rem;">
+          🔓 Reveal Hint {% if hint.cost > 0 %}(-{{ hint.cost }} pts){% endif %}
+        </button>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% elif not show_hints and hints %}
+  <div class="hints-disabled"
+    style="margin-top: 2rem; padding: 1rem; background: rgba(149, 165, 166, 0.1); border: 2px solid #95a5a6; border-radius: 8px;">
+    <h3 style="color: #95a5a6;">💡 Hints Disabled</h3>
+    <p style="color: #999;">You have disabled hints in your settings. <a href="{% url 'users:settings' %}"
+        style="color: #00ff88;">Enable them here</a> to view available hints.</p>
   </div>
   {% endif %}
 
@@ -61,4 +117,52 @@
 <div style="margin-top: 2rem;">
   <a href="{% url 'challenges:list' %}" class="btn btn-secondary">← Back to Challenges</a>
 </div>
+{% endblock %}
+{% block extra_js %}
+<script>
+  // Hint viewing functionality
+  document.querySelectorAll('.view-hint-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+      const hintId = this.dataset.hintId;
+      const cost = parseInt(this.dataset.cost);
+
+      if (cost > 0) {
+        if (!confirm(`This hint costs ${cost} points. Do you want to reveal it?`)) {
+          return;
+        }
+      }
+
+      fetch(`/challenges/hint/${hintId}/view/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            const hintContent = document.getElementById(`hint-content-${hintId}`);
+            hintContent.innerHTML = `<p style="color: #fff; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 4px;">${data.hint}</p>`;
+
+            if (data.cost > 0) {
+              showMessage(data.message, 'warning');
+              // Update score display if exists
+              const scoreElement = document.querySelector('.user-score');
+              if (scoreElement) {
+                scoreElement.textContent = data.new_score;
+              }
+            } else {
+              showMessage(data.message, 'success');
+            }
+          } else {
+            showMessage(data.message, 'error');
+          }
+        })
+        .catch(error => {
+          showMessage('Error revealing hint', 'error');
+          console.error('Error:', error);
+        });
+    });
+  });
+</script>
 {% endblock %}

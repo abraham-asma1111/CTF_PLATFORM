@@ -5,13 +5,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}CTF Platform{% endblock %}</title>
-  <link rel="stylesheet" href="/static/css/style.css?v=2">
+  <link rel="stylesheet" href="/static/css/style.css?v=5">
   <link rel="stylesheet" href="/static/css/cyber-animations.css?v=2">
   <link rel="stylesheet" href="/static/css/dashboard.css?v=2">
   {% block extra_css %}{% endblock %}
 </head>
 
-<body>
+<body class="{% block body_class %}{% endblock %}">
   <nav class="navbar">
     <div class="nav-container">
       <a href="{% url 'home' %}" class="nav-brand">🚩 CTF Platform</a>
@@ -19,9 +19,13 @@
         <li><a href="{% url 'home' %}">Home</a></li>
         <li><a href="{% url 'challenges:list' %}">Challenges</a></li>
         <li><a href="{% url 'leaderboard:leaderboard' %}">Leaderboard</a></li>
+        <li><a href="{% url 'teams:team_list' %}">Teams</a></li>
         {% if user.is_authenticated %}
         <li><a href="{% url 'users:profile' %}">Profile</a></li>
-        <li><a href="{% url 'users:logout' %}">Logout ({{ user.username }})</a></li>
+        <li><a href="{% url 'users:settings' %}">Settings</a></li>
+        <li><a href="{% url 'users:logout' %}"
+            style="background: #e74c3c; color: #fff; padding: 0.5rem 1rem; border-radius: 4px; font-weight: bold;">Logout</a>
+        </li>
         {% else %}
         <li><a href="{% url 'users:login' %}">Login</a></li>
         <li><a href="{% url 'users:register' %}">Register</a></li>
@@ -43,13 +47,113 @@
   </main>
 
   <footer class="footer">
-    <div class="footer-content">
-      <p>&copy; 2024 CTF Platform. Built with Django & Vanilla JS.</p>
+    <div class="footer-container">
+      <!-- Main Footer Content -->
+      <div class="footer-content">
+        <!-- Contact Information -->
+        <div class="footer-section">
+          <h3>Contact Info</h3>
+          <div class="contact-info">
+            <div class="contact-item">
+              <span class="contact-label">Email</span>
+              <a href="#" onclick="handleEmailClick(); return false;">abrahamasmamaw4@gmail.com</a>
+            </div>
+            <div class="contact-item">
+              <span class="contact-label">Address</span>
+              <span>Bahir Dar, Ethiopia</span>
+            </div>
+            <div class="contact-item">
+              <span class="contact-label">Phone</span>
+              <a href="tel:+251929744658">+251 929 744 658</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="footer-section">
+          <h3>Links</h3>
+          <ul class="footer-links">
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="{% url 'challenges:list' %}">Challenges</a></li>
+            <li><a href="{% url 'leaderboard:leaderboard' %}">Leaderboard</a></li>
+            <li><a href="{% url 'teams:team_list' %}">Teams</a></li>
+            {% if user.is_authenticated %}
+            <li><a href="{% url 'users:profile' %}">Profile</a></li>
+            <li><a href="{% url 'users:settings' %}">Settings</a></li>
+            {% else %}
+            <li><a href="{% url 'users:login' %}">Login</a></li>
+            <li><a href="{% url 'users:register' %}">Register</a></li>
+            {% endif %}
+          </ul>
+        </div>
+
+        <!-- Social Media -->
+        <div class="footer-section">
+          <h3>Social Media</h3>
+          <div class="social-links">
+            <a href="#" onclick="alert('Twitter Coming Soon!'); return false;" class="social-link" title="Twitter">
+              <span class="social-icon">🐦</span>
+              <span class="social-text">Twitter</span>
+            </a>
+            <a href="#" onclick="alert('Instagram Coming Soon!'); return false;" class="social-link" title="Instagram">
+              <span class="social-icon">📷</span>
+              <span class="social-text">Instagram</span>
+            </a>
+            <a href="#" onclick="alert('GitHub Coming Soon!'); return false;" class="social-link" title="GitHub">
+              <span class="social-icon">🐙</span>
+              <span class="social-text">GitHub</span>
+            </a>
+            <a href="#" onclick="alert('LinkedIn Coming Soon!'); return false;" class="social-link" title="LinkedIn">
+              <span class="social-icon">💼</span>
+              <span class="social-text">LinkedIn</span>
+            </a>
+            <a href="#" onclick="alert('Discord Coming Soon!'); return false;" class="social-link" title="Discord">
+              <span class="social-icon">💬</span>
+              <span class="social-text">Discord</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Bottom -->
+      <div class="footer-bottom">
+        <div class="footer-bottom-content">
+          <p class="copyright">&copy; 2024 CTF Platform. All rights reserved.</p>
+          <div class="footer-legal">
+            <a href="#" onclick="alert('Privacy Policy Coming Soon!'); return false;">Privacy Policy</a>
+            <span class="separator">•</span>
+            <a href="#" onclick="alert('Terms of Service Coming Soon!'); return false;">Terms of Service</a>
+            <span class="separator">•</span>
+            <a href="#" onclick="alert('Cookie Policy Coming Soon!'); return false;">Cookie Policy</a>
+          </div>
+        </div>
+      </div>
     </div>
   </footer>
 
   <script src="/static/js/main.js"></script>
   <script src="/static/js/filter.js"></script>
+
+  <script>
+    // Smart Email Handler - Detects device and opens appropriate email interface
+    function handleEmailClick() {
+      const email = 'abrahamasmamaw4@gmail.com';
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+      if (isMobile) {
+        // On mobile devices, use mailto to open native mail app
+        window.location.href = 'mailto:' + email;
+      } else {
+        // On desktop, open Gmail in a new tab
+        const gmailUrl = 'https://mail.google.com/mail/?view=cm&fs=1&to=' + email;
+        window.open(gmailUrl, '_blank');
+      }
+
+      // Prevent default link behavior
+      return false;
+    }
+  </script>
+
   {% block extra_js %}{% endblock %}
 </body>
 
