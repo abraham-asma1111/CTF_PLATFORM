@@ -1,0 +1,4 @@
+# file: /home/abraham/Desktop/ CTF2/challenges/vulnerable_views.py
+# hypothesis_version: 6.148.7
+
+[404, 500, "' OR '1'='1", '*', '</ul></body></html>', '<ul>', 'File not found', 'Invalid credentials', 'Login successful!', 'POST', 'SYSTEM', 'action', 'admin', 'challenge_id', 'debug', 'debug_info', 'error', 'file', 'file://', 'files', 'flag', 'host', 'info', 'localhost', 'message', 'name', 'password', 'path', 'rb', 'readme.txt', 'server_path', 'size', 'success', 'text/html', 'text/plain', 'user', 'username', 'utf-8']

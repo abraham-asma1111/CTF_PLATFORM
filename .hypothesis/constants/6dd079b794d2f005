@@ -1,0 +1,4 @@
+# file: /usr/lib/python3/dist-packages/django/urls/converters.py
+# hypothesis_version: 6.148.7
+
+['.+', '[-a-zA-Z0-9_]+', '[0-9]+', '[^/]+', 'int', 'path', 'slug', 'str', 'uuid']

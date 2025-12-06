@@ -1,0 +1,4 @@
+# file: /usr/lib/python3/dist-packages/django/contrib/sessions/backends/base.py
+# hypothesis_version: 6.148.7
+
+[86400, '_session_expiry', 'expiry', 'modification', 'testcookie', 'worked']

@@ -1,0 +1,4 @@
+# file: /usr/lib/python3/dist-packages/django/contrib/auth/__init__.py
+# hypothesis_version: 6.148.7
+
+['%s_%s', '********************', '_auth_user_backend', '_auth_user_hash', '_auth_user_id', 'credentials', 'is_authenticated', 'next', 'user']

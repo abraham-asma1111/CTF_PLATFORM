@@ -1,0 +1,4 @@
+# file: /home/abraham/Desktop/ CTF2/challenges/error_handlers.py
+# hypothesis_version: 6.148.7
+
+[400, 403, 500, 503, 'Content-Type', 'HTTP_ACCEPT', 'access_denied', 'application/json', 'connection', 'database_error', 'database_unavailable', 'details', 'error', 'message', 'messages', 'success', 'team_id', 'teams:my_team', 'teams:team_list', 'unexpected_error', 'unknown', 'user_team', 'validation_error']

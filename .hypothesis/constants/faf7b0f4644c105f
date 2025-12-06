@@ -1,0 +1,4 @@
+# file: /usr/lib/python3/dist-packages/django/db/backends/ddl_references.py
+# hypothesis_version: 6.148.7
+
+[', ', '<%s %r>', 'references_column', 'references_table', 'to_column', 'to_table', '{} {}']

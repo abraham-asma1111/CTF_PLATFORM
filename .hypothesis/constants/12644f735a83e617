@@ -1,0 +1,4 @@
+# file: /usr/lib/python3/dist-packages/sqlparse/filters/output.py
+# hypothesis_version: 6.148.7
+
+[' ";', " '", '"', '$', "'", '(', ')', '.=', ';', '=', '\\"', "\\'", 'sql', '{f.varname}{f.count}']

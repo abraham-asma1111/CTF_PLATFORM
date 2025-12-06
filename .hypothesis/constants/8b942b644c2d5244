@@ -1,0 +1,4 @@
+# file: /home/abraham/Desktop/ CTF2/challenges/migrations/0006_groupchallenge_created_at.py
+# hypothesis_version: 6.148.7
+
+['challenges', 'created_at', 'groupchallenge']

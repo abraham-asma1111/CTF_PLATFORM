@@ -1,0 +1,4 @@
+# file: /usr/lib/python3/dist-packages/django/core/management/sql.py
+# hypothesis_version: 6.148.7
+
+['stdout']

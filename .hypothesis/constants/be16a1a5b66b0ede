@@ -1,0 +1,4 @@
+# file: /usr/lib/python3/dist-packages/django/contrib/admin/__init__.py
+# hypothesis_version: 6.148.7
+
+['AdminSite', 'DateFieldListFilter', 'EmptyFieldListFilter', 'FieldListFilter', 'HORIZONTAL', 'ListFilter', 'ModelAdmin', 'SimpleListFilter', 'StackedInline', 'TabularInline', 'VERTICAL', 'action', 'admin', 'autodiscover', 'display', 'register', 'site']

@@ -1,0 +1,4 @@
+# file: /home/abraham/Desktop/ CTF2/users/forms.py
+# hypothesis_version: 6.148.7
+
+['accept', 'bio', 'captcha', 'department', 'education_level', 'email', 'first_name', 'image/*', 'last_name', 'password1', 'password2', 'placeholder', 'profile_photo', 'rows', 'sex', 'user', 'username']

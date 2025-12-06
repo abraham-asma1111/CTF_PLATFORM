@@ -1,0 +1,4 @@
+# file: /usr/lib/python3/dist-packages/django/contrib/sessions/middleware.py
+# hypothesis_version: 6.148.7
+
+[500, 'Cookie']

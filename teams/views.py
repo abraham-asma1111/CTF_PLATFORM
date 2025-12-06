@@ -5,8 +5,29 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.core.exceptions import ValidationError
+from django.db import DatabaseError
 from .models import Team, TeamMembership, TeamInvitation
+from challenges.group_challenge_manager import GroupChallengeManager, GroupScoring
+from challenges.models import GroupChallenge, GroupSubmission
+from challenges.error_handlers import (
+    handle_group_event_errors,
+    require_team_membership,
+    require_group_challenge_access,
+    require_team_captain,
+    safe_database_operation,
+    ErrorHandler
+)
+from challenges.validators import (
+    TeamMembershipValidationError,
+    AccessDeniedError,
+    DatabaseConnectionError,
+    ErrorMessageGenerator
+)
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 @login_required
@@ -36,7 +57,7 @@ def team_list(request):
 
 @login_required
 def team_detail(request, team_id):
-    """Display team details"""
+    """Display team details with group competition integration"""
     team = get_object_or_404(Team, id=team_id, is_active=True)
     members = team.members.filter(status='accepted').select_related('user')
     pending_requests = team.members.filter(status='pending').select_related('user')
@@ -50,6 +71,24 @@ def team_detail(request, team_id):
     # Check if user has pending request
     has_pending_request = pending_requests.filter(user=request.user).exists()
     
+    # Group competition integration data
+    team_progress = None
+    team_ranking = None
+    team_event_score = None
+    recent_team_submissions = None
+    
+    if GroupChallengeManager.is_group_mode_active():
+        active_event = GroupChallengeManager.get_active_group_event()
+        if active_event:
+            # Get team progress and ranking for group event
+            from challenges.group_challenge_manager import GroupScoring
+            team_progress = GroupScoring.get_team_event_progress(team, active_event)
+            team_ranking = GroupScoring.get_team_ranking(team, active_event)
+            team_event_score = GroupScoring.get_team_event_score(team, active_event)
+            
+            # Get recent team submissions for collaboration dashboard
+            recent_team_submissions = GroupChallengeManager.get_team_submissions(team).order_by('-submitted_at')[:10]
+    
     context = {
         'team': team,
         'members': members,
@@ -57,6 +96,11 @@ def team_detail(request, team_id):
         'is_captain': is_captain,
         'is_member': is_member,
         'has_pending_request': has_pending_request,
+        # Group competition integration
+        'team_progress': team_progress,
+        'team_ranking': team_ranking,
+        'team_event_score': team_event_score,
+        'recent_team_submissions': recent_team_submissions,
     }
     return render(request, 'teams/team_detail.html', context)
 
@@ -421,24 +465,40 @@ def leave_team(request):
 
 
 @login_required
+@handle_group_event_errors
+@require_team_captain
+@safe_database_operation
 def team_management(request, team_id):
-    """Team management page for captains"""
-    team = get_object_or_404(Team, id=team_id, is_active=True)
-    
-    # Only captain can access
-    if team.captain != request.user:
-        messages.error(request, 'Only team captain can access team management')
-        return redirect('teams:team_detail', team_id=team_id)
+    """Team management page for captains with group event integration"""
+    # Team and captain permissions are already validated via decorator
+    team = request.user_team
     
     members = team.members.filter(status='accepted').select_related('user')
     pending_requests = team.members.filter(status='pending').select_related('user')
     sent_invitations = team.invitations.filter(status='pending').select_related('to_user')
+    
+    # Group event management data
+    team_progress = None
+    team_ranking = None
+    team_event_score = None
+    
+    if GroupChallengeManager.is_group_mode_active():
+        active_event = GroupChallengeManager.get_active_group_event()
+        if active_event:
+            from challenges.group_challenge_manager import GroupScoring
+            team_progress = GroupScoring.get_team_event_progress(team, active_event)
+            team_ranking = GroupScoring.get_team_ranking(team, active_event)
+            team_event_score = GroupScoring.get_team_event_score(team, active_event)
     
     context = {
         'team': team,
         'members': members,
         'pending_requests': pending_requests,
         'sent_invitations': sent_invitations,
+        # Group event management data
+        'team_progress': team_progress,
+        'team_ranking': team_ranking,
+        'team_event_score': team_event_score,
     }
     return render(request, 'teams/team_management.html', context)
 
@@ -742,3 +802,163 @@ def team_leaderboard(request):
         'teams': competing_teams,
     }
     return render(request, 'teams/team_leaderboard.html', context)
+
+
+@login_required
+@handle_group_event_errors
+@require_group_challenge_access
+@safe_database_operation
+def group_challenges(request):
+    """Display group challenges for team members during active group events with collaboration features"""
+    # Team is already validated and available via decorator
+    team = request.user_team
+    
+    # Get active group event and challenges
+    active_event = GroupChallengeManager.get_active_group_event()
+    team_challenges = GroupChallengeManager.get_team_challenges(team)
+    team_submissions = GroupChallengeManager.get_team_submissions(team)
+    
+    # Get solved challenge IDs
+    solved_challenge_ids = team_submissions.filter(is_correct=True).values_list('challenge_id', flat=True)
+    
+    # Get event information
+    event_info = GroupChallengeManager.get_group_event_info(active_event)
+    
+    # Get team progress
+    from challenges.group_challenge_manager import GroupScoring
+    team_progress = GroupScoring.get_team_event_progress(team, active_event)
+    team_ranking = GroupScoring.get_team_ranking(team, active_event)
+    
+    # Collaboration features data
+    team_members = team.members.filter(status='accepted').select_related('user')
+    
+    # Calculate team member submission stats
+    for member in team_members:
+        member.submissions_count = team_submissions.filter(submitted_by=member.user).count()
+    
+    # Challenge category distribution
+    challenge_categories = {}
+    for challenge in team_challenges:
+        category = challenge.category
+        if category not in challenge_categories:
+            challenge_categories[category] = {'total': 0, 'solved': 0}
+        challenge_categories[category]['total'] += 1
+        if challenge.id in solved_challenge_ids:
+            challenge_categories[category]['solved'] += 1
+    
+    # Calculate percentages for categories
+    for category_data in challenge_categories.values():
+        if category_data['total'] > 0:
+            category_data['percentage'] = (category_data['solved'] / category_data['total']) * 100
+        else:
+            category_data['percentage'] = 0
+    
+    # Team performance metrics
+    team_metrics = {}
+    if team_submissions.exists():
+        total_submissions = team_submissions.count()
+        correct_submissions = team_submissions.filter(is_correct=True).count()
+        
+        team_metrics['success_rate'] = round((correct_submissions / total_submissions) * 100, 1) if total_submissions > 0 else 0
+        team_metrics['attempts_per_solve'] = round(total_submissions / max(correct_submissions, 1), 1)
+        
+        # Collaboration score based on team member participation
+        active_members = team_submissions.values('submitted_by').distinct().count()
+        total_members = team_members.count()
+        team_metrics['collaboration_score'] = round((active_members / max(total_members, 1)) * 100, 1)
+        
+        # Average solve time (simplified calculation)
+        team_metrics['avg_solve_time'] = "~2h"  # This would need more complex calculation with timestamps
+    else:
+        team_metrics = {
+            'success_rate': 0,
+            'attempts_per_solve': 0,
+            'collaboration_score': 0,
+            'avg_solve_time': "--"
+        }
+    
+    context = {
+        'team': team,
+        'active_event': active_event,
+        'event_info': event_info,
+        'team_challenges': team_challenges,
+        'team_submissions': team_submissions,
+        'solved_challenge_ids': list(solved_challenge_ids),
+        'team_progress': team_progress,
+        'team_ranking': team_ranking,
+        # Collaboration features
+        'team_members': team_members,
+        'challenge_categories': challenge_categories,
+        'team_metrics': team_metrics,
+    }
+    return render(request, 'teams/group_challenges.html', context)
+
+
+@login_required
+@csrf_exempt
+@handle_group_event_errors
+@require_group_challenge_access
+@safe_database_operation
+def submit_group_flag(request, challenge_id):
+    """Handle group challenge flag submission with comprehensive error handling"""
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'message': 'Invalid request method'})
+    
+    # Team is already validated and available via decorator
+    team = request.user_team
+    
+    try:
+        data = json.loads(request.body)
+        submitted_flag = data.get('flag', '').strip()
+        
+        if not submitted_flag:
+            return JsonResponse({'success': False, 'message': 'Flag cannot be empty'})
+        
+        # Get the group challenge with validation
+        active_event = GroupChallengeManager.get_active_group_event()
+        if not active_event:
+            return JsonResponse({'success': False, 'message': 'No active group event found'})
+        
+        try:
+            challenge = GroupChallenge.objects.get(id=challenge_id, event=active_event)
+        except GroupChallenge.DoesNotExist:
+            logger.warning(f'Challenge {challenge_id} not found for active event {active_event.id}')
+            return JsonResponse({'success': False, 'message': 'Challenge not found or not available'})
+        
+        # Submit solution through GroupChallengeManager (with built-in validation)
+        result = GroupChallengeManager.submit_solution(team, challenge, request.user, submitted_flag)
+        
+        if result['success'] and result['is_correct']:
+            return JsonResponse({
+                'success': True,
+                'message': f'Correct! Your team earned {result["points_awarded"]} points!',
+                'points_awarded': result['points_awarded'],
+                'team_name': team.name
+            })
+        elif result['success'] and not result['is_correct']:
+            return JsonResponse({
+                'success': False,
+                'message': result['message']
+            })
+        else:
+            return JsonResponse({
+                'success': False,
+                'message': result['message']
+            })
+            
+    except json.JSONDecodeError:
+        logger.warning(f'Invalid JSON data in group flag submission from user {request.user.username}')
+        return JsonResponse({'success': False, 'message': 'Invalid JSON data'})
+    
+    except TeamMembershipValidationError as e:
+        return ErrorHandler.handle_validation_error(request, e)
+    
+    except AccessDeniedError as e:
+        return ErrorHandler.handle_access_denied(request, 'group_challenge_access_denied')
+    
+    except DatabaseConnectionError as e:
+        return ErrorHandler.handle_database_error(request, e)
+    
+    except Exception as e:
+        logger.error(f'Unexpected error in group flag submission: {str(e)}')
+        return ErrorHandler.handle_unexpected_error(request, e)

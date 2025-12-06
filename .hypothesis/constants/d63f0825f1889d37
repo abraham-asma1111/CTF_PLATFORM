@@ -1,0 +1,4 @@
+# file: /usr/lib/python3/dist-packages/django/templatetags/tz.py
+# hypothesis_version: 6.148.7
+
+['as', 'endlocaltime', 'endtimezone', 'get_current_timezone', 'localtime', 'off', 'on', 'timezone']

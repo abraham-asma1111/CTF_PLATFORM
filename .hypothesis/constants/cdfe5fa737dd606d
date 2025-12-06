@@ -1,0 +1,4 @@
+# file: /usr/lib/python3/dist-packages/django/db/models/enums.py
+# hypothesis_version: 6.148.7
+
+['Choices', 'IntegerChoices', 'TextChoices', '_', '__empty__']

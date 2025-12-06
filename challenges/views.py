@@ -62,7 +62,6 @@ def challenge_list(request):
     """Display all active challenges"""
     from teams.models import TeamMembership
     
-    challenges = Challenge.objects.filter(is_active=True).order_by('id')
     user_solved = []
     
     if request.user.is_authenticated:
@@ -73,18 +72,39 @@ def challenge_list(request):
         ).select_related('team').first()
         
         if team_membership:
+            # User is in a team - show team and both challenges
+            team = team_membership.team
+            team_size = team.member_count()
+            
+            challenges = Challenge.objects.filter(
+                is_active=True,
+                challenge_type__in=['team', 'both']
+            ).filter(
+                min_team_size__lte=team_size,
+                max_team_size__gte=team_size
+            ).order_by('id')
+            
             # Get team's solved challenges
             user_solved = list(Submission.objects.filter(
                 team=team_membership.team,
                 is_correct=True
             ).values_list('challenge_id', flat=True))
         else:
+            # User not in team - show individual and both challenges
+            challenges = Challenge.objects.filter(
+                is_active=True,
+                challenge_type__in=['individual', 'both']
+            ).order_by('id')
+            
             # Get individual solved challenges
             user_solved = list(Submission.objects.filter(
                 user=request.user, 
                 is_correct=True,
                 team__isnull=True
             ).values_list('challenge_id', flat=True))
+    else:
+        # Not authenticated - show all challenges
+        challenges = Challenge.objects.filter(is_active=True).order_by('id')
     
     # Get all categories
     categories = Challenge.CATEGORY_CHOICES
@@ -114,6 +134,20 @@ def challenge_detail(request, challenge_id):
     ).select_related('team').first()
     
     user_team = team_membership.team if team_membership else None
+    
+    # Check if user can access this challenge
+    if user_team:
+        team_size = user_team.member_count()
+        if challenge.challenge_type == 'individual':
+            messages.error(request, 'This is an individual-only challenge. Leave your team to access it.')
+            return redirect('challenges:list')
+        if team_size < challenge.min_team_size or team_size > challenge.max_team_size:
+            messages.error(request, f'This challenge requires {challenge.min_team_size}-{challenge.max_team_size} team members. Your team has {team_size}.')
+            return redirect('challenges:list')
+    else:
+        if challenge.challenge_type == 'team':
+            messages.error(request, 'This is a team-only challenge. Join a team to access it.')
+            return redirect('challenges:list')
     
     # Check if user/team already solved this challenge
     if user_team:
@@ -240,17 +274,20 @@ def submit_flag(request, challenge_id):
         
         if submission.is_correct:
             if user_team:
+                # Calculate team points (with multiplier)
+                team_points = int(challenge.points * challenge.team_points_multiplier)
+                
                 # Update team score
                 team = user_team
-                team.total_score += challenge.points
+                team.total_score += team_points
                 team.challenges_solved += 1
                 team.last_submission = timezone.now()
                 team.save()
                 
                 return JsonResponse({
                     'success': True, 
-                    'message': f'Correct! Your team earned {challenge.points} points!',
-                    'points': challenge.points,
+                    'message': f'Correct! Your team earned {team_points} points! (Base: {challenge.points} × {challenge.team_points_multiplier})',
+                    'points': team_points,
                     'team_name': team.name
                 })
             else:

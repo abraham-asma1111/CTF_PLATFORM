@@ -1,0 +1,4 @@
+# file: /usr/lib/python3/dist-packages/django/views/generic/list.py
+# hypothesis_version: 6.148.7
+
+['%s/%s%s.html', '%s_list', '_list', 'class_name', 'cls', 'exists', 'is_paginated', 'last', 'message', 'model', 'object_list', 'page', 'page_number', 'page_obj', 'paginator']

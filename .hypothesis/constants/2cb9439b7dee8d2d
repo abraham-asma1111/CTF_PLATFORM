@@ -1,0 +1,4 @@
+# file: /usr/lib/python3/dist-packages/django/core/management/utils.py
+# hypothesis_version: 6.148.7
+
+['%s*', ',', '--', '--fast', '.', '.%s', '.COM;.EXE;.BAT;.CMD', '/', 'Error executing %s', 'PATH', 'PATHEXT', 'Unknown model: %s', 'black', 'black_path', 'nt', 'replace', 'utf-8', 'value']

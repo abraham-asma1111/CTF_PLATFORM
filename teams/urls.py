@@ -22,4 +22,6 @@ urlpatterns = [
     path('invitation/<int:invitation_id>/cancel/', views.cancel_invitation, name='cancel_invitation'),
     path('cancel-request/', views.cancel_join_request, name='cancel_join_request'),
     path('leave/', views.leave_team, name='leave_team'),
+    path('group-challenges/', views.group_challenges, name='group_challenges'),
+    path('group-challenges/<int:challenge_id>/submit/', views.submit_group_flag, name='submit_group_flag'),
 ]

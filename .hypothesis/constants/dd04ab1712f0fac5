@@ -1,0 +1,4 @@
+# file: /home/abraham/Desktop/ CTF2/leaderboard/urls.py
+# hypothesis_version: 6.148.7
+
+['api', 'api/', 'group-api/', 'group_api', 'leaderboard']

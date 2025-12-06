@@ -1,0 +1,4 @@
+# file: /usr/lib/python3/dist-packages/django/contrib/sessions/base_session.py
+# hypothesis_version: 6.148.7
+
+['expire date', 'session', 'session data', 'session key', 'sessions']

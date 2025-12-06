@@ -1,0 +1,4 @@
+# file: /usr/lib/python3/dist-packages/dotenv/parser.py
+# hypothesis_version: 6.148.7
+
+['"', '"((?:\\\\"|[^"])*)"', '#', "'", "'((?:\\\\'|[^'])*)'", "'([^']+)'", '(=[^\\S\\r\\n]*)', '([^=\\#\\s]+)', '([^\\r\\n]*)', '(\\r\\n|\\n|\\r)', '=', 'Position', '[^\\S\\r\\n]*', '\\\\[\\\\\'\\"abfnrtv]', "\\\\[\\\\']", '\\s*', '\\s+#.*', 'read: End of string', 'unicode-escape']

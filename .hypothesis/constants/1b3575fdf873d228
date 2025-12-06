@@ -1,0 +1,4 @@
+# file: /home/abraham/Desktop/ CTF2/challenges/models.py
+# hypothesis_version: 6.148.7
+
+[1.0, 100, 200, 255, '-viewed_at', 'Binary Exploitation', 'Cryptography', 'Easy', 'Forensics', 'Group Mode', 'Hard', 'Individual Challenge', 'Individual Mode', 'Medium', 'Miscellaneous', 'Reverse Engineering', 'Team Challenge', 'The hint text', 'Web', '_state', 'all_users', 'both', 'challenge', 'challenges/%Y/%m/%d/', 'created', 'crypto', 'difficulty', 'draft', 'easy', 'forensics', 'group', 'group_challenges', 'group_events', 'group_submissions', 'hard', 'hint', 'hints', 'individual', 'individual_users', 'medium', 'misc', 'order', 'platform_mode', 'points', 'pwn', 'reverse', 'sha256:', 'team', 'team_members', 'teams.Team', 'user', 'web']

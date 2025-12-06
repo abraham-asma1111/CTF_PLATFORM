@@ -1,0 +1,4 @@
+# file: /home/abraham/Desktop/ CTF2/users/admin.py
+# hypothesis_version: 6.148.7
+
+['#2ecc71', '#3498db', '#95a5a6', '#9b59b6', '#e74c3c', '#f39c12', '-created_at', '-sent_at', 'Currently Blocked', 'Email Content', 'Recipients', 'Status', 'Status & Statistics', 'all_users', 'attempts', 'blocked_at', 'blocked_until', 'broadcast', 'broadcast__title', 'classes', 'collapse', 'content', 'created_at', 'created_by', 'custom', 'custom_recipients', 'description', 'draft', 'email', 'emails_failed', 'emails_sent', 'error_message', 'expires_at', 'failed', 'fields', 'individual_users', 'ip_address', 'is_active_status', 'is_used', 'reason', 'recipient_email', 'recipient_type', 'recipient_type_badge', 'sending', 'sent', 'sent_at', 'status', 'status_badge', 'success', 'success_badge', 'team_captains', 'team_members', 'title', 'top_performers', 'total_recipients', 'username']

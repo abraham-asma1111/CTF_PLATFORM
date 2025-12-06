@@ -1,0 +1,4 @@
+# file: /home/abraham/Desktop/ CTF2/challenges/group_challenge_manager.py
+# hypothesis_version: 6.148.7
+
+[100, '-submitted_at', 'Correct! Well done!', 'accepted', 'challenge', 'challenges_solved', 'description', 'difficulty', 'end_time', 'event_score', 'group', 'group_has_team_link', 'is_active', 'is_correct', 'last_submission', 'max_teams', 'message', 'name', 'point_multiplier', 'points', 'points_awarded', 'progress_percentage', 'rank', 'score', 'scoring_separated', 'sha256:', 'solve_rate', 'solved_challenges', 'solved_teams', 'start_time', 'submission', 'submitted_by', 'success', 'team', 'total', 'total_attempts', 'total_challenges', 'total_points', 'total_teams']

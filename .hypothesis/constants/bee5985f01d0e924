@@ -1,0 +1,4 @@
+# file: /usr/lib/python3/dist-packages/sqlparse/filters/others.py
+# hypothesis_version: 6.148.7
+
+['(', '([\\r\\n]+) *$', ')', ',', ';', '_stripws_{cls}']

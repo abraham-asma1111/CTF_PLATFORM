@@ -1,0 +1,4 @@
+# file: /usr/lib/python3/dist-packages/django/db/migrations/loader.py
+# hypothesis_version: 6.148.7
+
+['%s.%s', ', ', '.', 'Migration', '__file__', '__first__', '__latest__', '__path__', '_~', 'bad magic number', 'migrations']

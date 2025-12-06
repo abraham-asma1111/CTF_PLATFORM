@@ -1,0 +1,4 @@
+# file: /usr/lib/python3/dist-packages/django/db/backends/base/validation.py
+# hypothesis_version: 6.148.7
+
+['check_field_type', 'remote_field']

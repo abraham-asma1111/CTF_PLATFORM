@@ -1,0 +1,4 @@
+# file: /home/abraham/Desktop/ CTF2/users/migrations/0006_userprofile_email_achievements_and_more.py
+# hypothesis_version: 6.148.7
+
+['Auto', 'Dark', 'Light', 'UTC', 'auto', 'dark', 'email_achievements', 'email_new_challenges', 'email_rank_changes', 'email_weekly_summary', 'en', 'language', 'light', 'profile_public', 'show_email_public', 'show_hints', 'show_on_leaderboard', 'theme', 'timezone', 'userprofile', 'users']

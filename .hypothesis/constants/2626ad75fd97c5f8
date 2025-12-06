@@ -1,0 +1,4 @@
+# file: /usr/lib/python3/dist-packages/django/core/paginator.py
+# hypothesis_version: 6.148.7
+
+['<Page %s of %s>', 'count', 'model', 'ordered', '{!r}', '{} {}', '…']

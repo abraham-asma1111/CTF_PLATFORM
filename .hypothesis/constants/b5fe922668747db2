@@ -1,0 +1,4 @@
+# file: /home/abraham/Desktop/ CTF2/users/urls.py
+# hypothesis_version: 6.148.7
+
+['admin-dashboard/', 'admin_dashboard', 'change_password', 'delete_account', 'edit_profile', 'forgot-password/', 'forgot_password', 'login', 'login/', 'logout', 'logout/', 'manage-users/', 'manage_users', 'profile', 'profile/', 'profile/edit/', 'register', 'register/', 'reset-password/', 'reset_password', 'send-verification/', 'send_verification', 'settings', 'settings/', 'settings/privacy/', 'update_notifications', 'update_preferences', 'update_privacy', 'users']

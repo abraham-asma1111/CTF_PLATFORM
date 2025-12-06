@@ -1,0 +1,4 @@
+# file: /usr/lib/python3/dist-packages/django/views/csrf.py
+# hypothesis_version: 6.148.7
+
+['403_csrf.html', 'DEBUG', 'Forbidden', 'docs_version', 'main', 'more', 'no_cookie', 'no_cookie1', 'no_cookie2', 'no_referer', 'no_referer1', 'no_referer2', 'no_referer3', 'reason', 'title']

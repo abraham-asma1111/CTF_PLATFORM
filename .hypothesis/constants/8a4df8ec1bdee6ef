@@ -1,0 +1,4 @@
+# file: /home/abraham/Desktop/ CTF2/challenges/validators.py
+# hypothesis_version: 6.148.7
+
+[1.0, 10.0, 1000, 3600, '\n• ', 'SELECT 1', 'Validation failed.', 'accepted', 'already_in_team', 'challenge_not_found', 'connection', 'constraint', 'created_by', 'database_connection', 'database_operation', 'database_unavailable', 'description', 'end_time', 'error', 'event', 'event_not_found', 'group', 'group_mode_inactive', 'integrity', 'invalid_request', 'max_teams', 'message', 'name', 'not_authenticated', 'not_captain', 'not_in_team', 'permission', 'point_multiplier', 'result', 'start_time', 'success', 'team', 'team_full', 'team_name', 'team_not_active', 'team_too_small', 'technical_details', 'timeout', 'unexpected', 'unknown', 'user_team', 'validated_data']

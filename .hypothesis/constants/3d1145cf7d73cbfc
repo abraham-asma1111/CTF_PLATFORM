@@ -1,0 +1,4 @@
+# file: /home/abraham/Desktop/ CTF2/users/models.py
+# hypothesis_version: 6.148.7
+
+[150, 200, 255, 500, ',', '-blocked_at', '-created_at', '-sent_at', '-total_score', 'All Users', 'Auto', 'Computer Science', 'Custom Recipients', 'Cyber Security', 'Dark', 'Draft', 'Email subject line', 'Failed', 'Female', 'High School', 'Light', 'Male', 'Other', 'Postgraduate', 'Sending', 'Sent', 'Software Engineering', 'Team Captains Only', 'Team Members Only', 'Top 10 Users', 'UTC', 'Undergraduate', 'accepted', 'all_users', 'auto', 'broadcast_emails', 'computer_science', 'custom', 'cyber_security', 'dark', 'draft', 'email', 'email_logs', 'en', 'failed', 'female', 'high_school', 'individual_users', 'it', 'last_submission', 'light', 'male', 'other', 'postgraduate', 'profile_photos/', 'sending', 'sent', 'software_engineering', 'team_captains', 'team_members', 'top_performers', 'undergraduate', 'user_id', '✓', '✗']

@@ -1,0 +1,4 @@
+# file: /usr/lib/python3/dist-packages/django/db/migrations/utils.py
+# hypothesis_version: 6.148.7
+
+['%Y%m%d_%H%M', '.', 'FieldReference', 'through', 'to through', 'to_fields']

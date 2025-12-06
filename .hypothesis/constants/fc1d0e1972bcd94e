@@ -1,0 +1,4 @@
+# file: /usr/lib/python3/dist-packages/django/core/handlers/exception.py
+# hypothesis_version: 6.148.7
+
+[400, 403, 404, 500, '%s: %s', 'error', 'is_rendered', 'render']

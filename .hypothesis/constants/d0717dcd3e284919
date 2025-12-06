@@ -1,0 +1,4 @@
+# file: /usr/lib/python3/dist-packages/django/core/serializers/json.py
+# hypothesis_version: 6.148.7
+
+['+00:00', ',', ': ', 'Z', '[', ']', 'cls', 'ensure_ascii', 'fields', 'indent', 'separators', 'stream']

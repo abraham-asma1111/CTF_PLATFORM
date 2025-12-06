@@ -7,7 +7,6 @@
   <title>{% block title %}CTF Platform{% endblock %}</title>
   <link rel="stylesheet" href="/static/css/style.css?v=5">
   <link rel="stylesheet" href="/static/css/cyber-animations.css?v=2">
-  <link rel="stylesheet" href="/static/css/dashboard.css?v=2">
   {% block extra_css %}{% endblock %}
 </head>
 
@@ -40,6 +39,70 @@
       {% for message in messages %}
       <div class="alert alert-{{ message.tags }}">{{ message }}</div>
       {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Group Event Notification Banner -->
+    {% if is_group_mode_active and group_event_details %}
+    <div class="group-event-banner">
+      <div class="group-event-content">
+        <div class="group-event-icon">🏆</div>
+        <div class="group-event-info">
+          <h3 class="group-event-title">{{ group_event_details.name }}</h3>
+          <p class="group-event-description">{{ group_event_details.description }}</p>
+          <div class="group-event-stats">
+            <span class="stat-item">
+              <i class="icon">🎯</i>
+              {{ group_event_details.total_challenges }} Challenges
+            </span>
+            <span class="stat-item">
+              <i class="icon">👥</i>
+              {{ group_event_details.total_teams }} Teams Participating
+            </span>
+            {% if group_event_details.point_multiplier != 1.0 %}
+            <span class="stat-item">
+              <i class="icon">⚡</i>
+              {{ group_event_details.point_multiplier }}x Points Multiplier
+            </span>
+            {% endif %}
+          </div>
+        </div>
+        <div class="group-event-actions">
+          {% if user.is_authenticated %}
+            {% if user_team %}
+              <a href="{% url 'teams:my_team' %}" class="btn-group-event primary">
+                <i class="icon">🛡️</i>
+                Go to Team Section
+              </a>
+            {% else %}
+              <div class="team-prompt">
+                <p class="prompt-text">Join a team to participate!</p>
+                <div class="prompt-actions">
+                  <a href="{% url 'teams:team_list' %}" class="btn-group-event secondary">
+                    <i class="icon">👥</i>
+                    Join Team
+                  </a>
+                  <a href="{% url 'teams:create_team' %}" class="btn-group-event primary">
+                    <i class="icon">➕</i>
+                    Create Team
+                  </a>
+                </div>
+              </div>
+            {% endif %}
+          {% else %}
+            <div class="team-prompt">
+              <p class="prompt-text">Login to participate in the group competition!</p>
+              <a href="{% url 'users:login' %}" class="btn-group-event primary">
+                <i class="icon">🔑</i>
+                Login
+              </a>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+      <button class="group-event-close" onclick="dismissGroupEventBanner()" title="Dismiss">
+        <i class="icon">✕</i>
+      </button>
     </div>
     {% endif %}
 
@@ -127,6 +190,14 @@
             <a href="#" onclick="alert('Cookie Policy Coming Soon!'); return false;">Cookie Policy</a>
           </div>
         </div>
+        <div class="footer-timezone">
+          {% load timezone_tags %}
+          <div class="timezone-info">
+            <span class="timezone-icon">🕐</span>
+            <span class="timezone-text">All times shown in East Africa Time (EAT, UTC+3)</span>
+            <span class="current-time">Current time: {% current_nairobi_time|date:"Y-m-d H:i:s" %} EAT</span>
+          </div>
+        </div>
       </div>
     </div>
   </footer>
@@ -152,6 +223,24 @@
       // Prevent default link behavior
       return false;
     }
+
+    // Group Event Banner Functions
+    function dismissGroupEventBanner() {
+      const banner = document.querySelector('.group-event-banner');
+      if (banner) {
+        banner.classList.add('dismissed');
+        // Store dismissal in localStorage to remember user preference
+        localStorage.setItem('groupEventBannerDismissed', 'true');
+      }
+    }
+
+    // Check if banner was previously dismissed
+    document.addEventListener('DOMContentLoaded', function() {
+      const banner = document.querySelector('.group-event-banner');
+      if (banner && localStorage.getItem('groupEventBannerDismissed') === 'true') {
+        banner.classList.add('dismissed');
+      }
+    });
   </script>
 
   {% block extra_js %}{% endblock %}

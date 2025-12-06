@@ -1,0 +1,4 @@
+# file: /usr/lib/python3/dist-packages/sqlparse/filters/__init__.py
+# hypothesis_version: 6.148.7
+
+['AlignedIndentFilter', 'IdentifierCaseFilter', 'KeywordCaseFilter', 'OutputPHPFilter', 'OutputPythonFilter', 'ReindentFilter', 'RightMarginFilter', 'SerializerUnicode', 'StripCommentsFilter', 'TruncateStringFilter']

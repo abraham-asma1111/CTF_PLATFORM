@@ -1,0 +1,4 @@
+# file: /home/abraham/Desktop/ CTF2/teams/migrations/0001_initial.py
+# hypothesis_version: 6.148.7
+
+[100, 200, 500, '-created_at', '-joined_at', '-total_score', 'Accepted', 'Cancelled', 'ID', 'Pending', 'Rejected', 'Team', 'TeamInvitation', 'TeamMembership', 'accepted', 'cancelled', 'captain', 'captained_teams', 'challenges_solved', 'created_at', 'description', 'from_user', 'id', 'invitations', 'is_active', 'is_open', 'joined_at', 'last_submission', 'max_members', 'members', 'message', 'name', 'ordering', 'pending', 'received_invitations', 'rejected', 'sent_invitations', 'status', 'team', 'team_membership', 'teams.team', 'to_user', 'total_score', 'unique_together', 'updated_at', 'user']

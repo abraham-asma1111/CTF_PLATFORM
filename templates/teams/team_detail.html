@@ -8,6 +8,51 @@
 
 {% block content %}
 <div class="container mt-5">
+  <!-- Group Event Integration Section -->
+  {% if is_group_mode_active %}
+  <div class="group-event-integration-banner">
+    <div class="event-banner-content">
+      <div class="event-icon">🏆</div>
+      <div class="event-info">
+        <h3>{{ group_event_details.name }} - Active Competition</h3>
+        <p>{{ group_event_details.description }}</p>
+        {% if is_member %}
+        <div class="team-event-stats">
+          <span class="stat-item">
+            <i class="icon">🎯</i>
+            {{ group_event_details.total_challenges }} Challenges Available
+          </span>
+          {% if team_progress %}
+          <span class="stat-item">
+            <i class="icon">✅</i>
+            {{ team_progress.solved_challenges }}/{{ team_progress.total_challenges }} Solved
+          </span>
+          <span class="stat-item">
+            <i class="icon">📊</i>
+            {{ team_progress.progress_percentage|floatformat:1 }}% Complete
+          </span>
+          {% endif %}
+        </div>
+        {% endif %}
+      </div>
+      {% if is_member %}
+      <div class="event-actions">
+        <a href="{% url 'teams:group_challenges' %}" class="btn-event primary">
+          <i class="icon">🚀</i>
+          Access Group Challenges
+        </a>
+      </div>
+      {% else %}
+      <div class="event-actions">
+        <div class="join-prompt">
+          <p>Join this team to participate in the group competition!</p>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+
   <div class="row mb-4">
     <div class="col-md-8">
       <h2 class="text-primary">🛡️ {{ team.name }}</h2>
@@ -15,16 +60,18 @@
     </div>
     <div class="col-md-4">
       <div class="team-nav-buttons">
+        {% if is_group_mode_active and is_member %}
+        <a href="{% url 'teams:group_challenges' %}" class="btn-team success">
+          <i class="fas fa-trophy"></i> Group Challenges
+        </a>
+        {% endif %}
+        
         {% if is_captain %}
         <a href="{% url 'teams:team_management' team.id %}" class="btn-team warning">
           <i class="fas fa-cog"></i> Manage
         </a>
         {% endif %}
-        {% if is_member %}
-        <a href="{% url 'chat:team_chat' team.id %}" class="btn-team success" style="font-weight: bold;">
-          <i class="fas fa-comments"></i> Chat
-        </a>
-        {% endif %}
+
         <a href="{% url 'teams:team_list' %}" class="btn-team primary">
           <i class="fas fa-arrow-left"></i> All Teams
         </a>
@@ -43,27 +90,135 @@
       <div class="team-stat-card score">
         <h3>{{ team.total_score }}</h3>
         <p class="text-muted mb-0">Total Points</p>
+        {% if is_group_mode_active and team_event_score %}
+        <small class="text-success">Event: {{ team_event_score }} pts</small>
+        {% endif %}
       </div>
     </div>
     <div class="col-md-3 mb-3">
       <div class="team-stat-card solved">
         <h3>{{ team.challenges_solved }}</h3>
         <p class="text-muted mb-0">Challenges Solved</p>
+        {% if is_group_mode_active and team_progress %}
+        <small class="text-success">Event: {{ team_progress.solved_challenges }}</small>
+        {% endif %}
       </div>
     </div>
     <div class="col-md-3 mb-3">
       <div class="team-stat-card members">
         <h3>{{ team.member_count }}</h3>
         <p class="text-muted mb-0">Members</p>
+        {% if team_ranking %}
+        <small class="text-warning">Rank #{{ team_ranking.rank }}</small>
+        {% endif %}
       </div>
     </div>
     <div class="col-md-3 mb-3">
       <div class="team-stat-card max">
         <h3>{{ team.max_members }}</h3>
         <p class="text-muted mb-0">Max Members</p>
+        {% if is_group_mode_active %}
+        <small class="text-info">Competition Ready</small>
+        {% endif %}
       </div>
     </div>
   </div>
+
+  <!-- Team Collaboration Dashboard for Group Events -->
+  {% if is_group_mode_active and is_member and team_progress %}
+  <div class="team-collaboration-dashboard">
+    <div class="collaboration-header">
+      <h4><i class="fas fa-users"></i> Team Collaboration Dashboard</h4>
+      <p class="text-muted">Real-time team progress and collaboration tools for {{ group_event_details.name }}</p>
+    </div>
+    
+    <div class="row">
+      <!-- Team Progress Overview -->
+      <div class="col-md-6 mb-4">
+        <div class="collaboration-card progress-overview">
+          <div class="card-header">
+            <h5><i class="fas fa-chart-line"></i> Team Progress</h5>
+          </div>
+          <div class="card-body">
+            {% if team_progress %}
+            <div class="progress-summary">
+              <div class="progress-circle">
+                <div class="circle-progress" data-percentage="{{ team_progress.progress_percentage }}">
+                  <span class="percentage">{{ team_progress.progress_percentage|floatformat:0 }}%</span>
+                </div>
+              </div>
+              <div class="progress-details">
+                <div class="progress-stat">
+                  <span class="stat-number">{{ team_progress.solved_challenges }}</span>
+                  <span class="stat-label">Challenges Solved</span>
+                </div>
+                <div class="progress-stat">
+                  <span class="stat-number">{{ team_progress.total_challenges }}</span>
+                  <span class="stat-label">Total Challenges</span>
+                </div>
+                {% if team_ranking %}
+                <div class="progress-stat">
+                  <span class="stat-number">#{{ team_ranking.rank }}</span>
+                  <span class="stat-label">Current Rank</span>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+            {% else %}
+            <p class="text-muted">No progress data available yet. Start solving challenges!</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Team Activity -->
+      <div class="col-md-6 mb-4">
+        <div class="collaboration-card recent-activity">
+          <div class="card-header">
+            <h5><i class="fas fa-clock"></i> Recent Team Activity</h5>
+          </div>
+          <div class="card-body">
+            {% if recent_team_submissions %}
+            <div class="activity-list">
+              {% for submission in recent_team_submissions|slice:":5" %}
+              <div class="activity-item {% if submission.is_correct %}success{% else %}attempt{% endif %}">
+                <div class="activity-icon">
+                  {% if submission.is_correct %}
+                  <i class="fas fa-check-circle text-success"></i>
+                  {% else %}
+                  <i class="fas fa-times-circle text-danger"></i>
+                  {% endif %}
+                </div>
+                <div class="activity-content">
+                  <div class="activity-title">{{ submission.challenge.title }}</div>
+                  <div class="activity-meta">
+                    <span class="submitter">{{ submission.submitted_by.username }}</span>
+                    <span class="timestamp">{{ submission.submitted_at|timesince }} ago</span>
+                    {% if submission.is_correct %}
+                    <span class="points">+{{ submission.points_awarded }} pts</span>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+            <div class="activity-footer">
+              <a href="{% url 'teams:group_challenges' %}" class="btn btn-sm btn-outline-primary">
+                View All Activity
+              </a>
+            </div>
+            {% else %}
+            <p class="text-muted">No team activity yet. Start solving challenges together!</p>
+            <a href="{% url 'teams:group_challenges' %}" class="btn btn-primary">
+              <i class="fas fa-rocket"></i> Start Solving
+            </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
 
   <div class="row">
     <div class="col-md-6">
@@ -271,4 +426,298 @@
     });
   });
 </script>
+
+<style>
+/* Group Event Integration Styles */
+.group-event-integration-banner {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  border: 2px solid #00ff88;
+  border-radius: 15px;
+  padding: 25px;
+  margin-bottom: 25px;
+}
+
+.event-banner-content {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.event-icon {
+  font-size: 3rem;
+  animation: pulse 2s infinite;
+}
+
+.event-info {
+  flex: 1;
+  min-width: 300px;
+}
+
+.event-info h3 {
+  color: #00ff88;
+  margin: 0 0 8px 0;
+  font-size: 1.5rem;
+}
+
+.event-info p {
+  color: #e0e0e0;
+  margin: 0 0 15px 0;
+}
+
+.team-event-stats {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #b0b0b0;
+  font-size: 0.9rem;
+  background: rgba(0, 255, 136, 0.1);
+  padding: 4px 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 255, 136, 0.3);
+}
+
+.event-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-event {
+  background: linear-gradient(135deg, #00ff88, #00dd77);
+  color: #000;
+  padding: 12px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.btn-event:hover {
+  background: linear-gradient(135deg, #00dd77, #00bb66);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 255, 136, 0.3);
+  color: #000;
+  text-decoration: none;
+}
+
+.join-prompt {
+  text-align: center;
+  color: #888;
+  font-style: italic;
+}
+
+/* Team Collaboration Dashboard */
+.team-collaboration-dashboard {
+  background: rgba(0, 255, 136, 0.05);
+  border: 1px solid rgba(0, 255, 136, 0.2);
+  border-radius: 12px;
+  padding: 25px;
+  margin-bottom: 25px;
+}
+
+.collaboration-header h4 {
+  color: #00ff88;
+  margin: 0 0 8px 0;
+}
+
+.collaboration-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.collaboration-card .card-header {
+  background: rgba(0, 255, 136, 0.1);
+  border-bottom: 1px solid rgba(0, 255, 136, 0.2);
+  padding: 15px 20px;
+}
+
+.collaboration-card .card-header h5 {
+  color: #00ff88;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.collaboration-card .card-body {
+  padding: 20px;
+}
+
+.progress-summary {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.progress-circle {
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+
+.circle-progress {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: conic-gradient(#00ff88 0deg, #00ff88 var(--percentage, 0deg), rgba(255, 255, 255, 0.1) var(--percentage, 0deg));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.circle-progress::before {
+  content: '';
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  background: #1a1a2e;
+  border-radius: 50%;
+}
+
+.percentage {
+  position: relative;
+  z-index: 1;
+  color: #00ff88;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.progress-details {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.progress-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.stat-number {
+  color: #00ff88;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.stat-label {
+  color: #888;
+  font-size: 0.8rem;
+}
+
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+}
+
+.activity-item.success {
+  border-left: 3px solid #00ff88;
+}
+
+.activity-item.attempt {
+  border-left: 3px solid #ffa500;
+}
+
+.activity-icon {
+  font-size: 1.2rem;
+}
+
+.activity-content {
+  flex: 1;
+}
+
+.activity-title {
+  color: #e0e0e0;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.activity-meta {
+  display: flex;
+  gap: 10px;
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.submitter {
+  color: #b0b0b0;
+}
+
+.timestamp {
+  color: #888;
+}
+
+.points {
+  color: #00ff88;
+  font-weight: 500;
+}
+
+.activity-footer {
+  margin-top: 15px;
+  text-align: center;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .event-banner-content {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .team-event-stats {
+    justify-content: center;
+  }
+  
+  .progress-summary {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+  }
+  
+  .progress-details {
+    flex-direction: row;
+    justify-content: space-around;
+  }
+  
+  .activity-item {
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+  }
+  
+  .activity-meta {
+    justify-content: center;
+  }
+}
+</style>
 {% endblock %}

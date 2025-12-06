@@ -49,6 +49,107 @@ class BlockedPasswordReset(models.Model):
         return f"Blocked: {self.email or self.ip_address} until {self.blocked_until}"
 
 
+class BroadcastEmail(models.Model):
+    """Broadcast email system for admins"""
+    RECIPIENT_CHOICES = [
+        ('all_users', 'All Users'),
+        ('team_captains', 'Team Captains Only'),
+        ('team_members', 'Team Members Only'),
+        ('individual_users', 'Individual Users (No Team)'),
+        ('top_performers', 'Top 10 Users'),
+        ('custom', 'Custom Recipients'),
+    ]
+    
+    STATUS_CHOICES = [
+        ('draft', 'Draft'),
+        ('sending', 'Sending'),
+        ('sent', 'Sent'),
+        ('failed', 'Failed'),
+    ]
+    
+    title = models.CharField(max_length=200, help_text='Email subject line')
+    content = models.TextField(help_text='Email content (HTML supported)')
+    recipient_type = models.CharField(max_length=20, choices=RECIPIENT_CHOICES)
+    custom_recipients = models.TextField(
+        blank=True, 
+        help_text='Email addresses separated by commas (for custom recipients)'
+    )
+    
+    # Metadata
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='broadcast_emails')
+    created_at = models.DateTimeField(auto_now_add=True)
+    sent_at = models.DateTimeField(null=True, blank=True)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')
+    
+    # Statistics
+    total_recipients = models.IntegerField(default=0)
+    emails_sent = models.IntegerField(default=0)
+    emails_failed = models.IntegerField(default=0)
+    
+    class Meta:
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.title} - {self.get_recipient_type_display()} ({self.status})"
+    
+    def get_recipients(self):
+        """Get list of email addresses based on recipient type"""
+        from teams.models import Team, TeamMembership
+        
+        if self.recipient_type == 'all_users':
+            return User.objects.filter(is_active=True).values_list('email', flat=True)
+        
+        elif self.recipient_type == 'team_captains':
+            return User.objects.filter(
+                captained_teams__is_active=True
+            ).distinct().values_list('email', flat=True)
+        
+        elif self.recipient_type == 'team_members':
+            return User.objects.filter(
+                team_memberships__status='accepted',
+                team_memberships__team__is_active=True
+            ).distinct().values_list('email', flat=True)
+        
+        elif self.recipient_type == 'individual_users':
+            # Users not in any team
+            team_users = TeamMembership.objects.filter(
+                status='accepted'
+            ).values_list('user_id', flat=True)
+            return User.objects.filter(
+                is_active=True
+            ).exclude(id__in=team_users).values_list('email', flat=True)
+        
+        elif self.recipient_type == 'top_performers':
+            return User.objects.filter(
+                is_active=True,
+                userprofile__total_score__gt=0
+            ).order_by('-userprofile__total_score')[:10].values_list('email', flat=True)
+        
+        elif self.recipient_type == 'custom':
+            if self.custom_recipients:
+                emails = [email.strip() for email in self.custom_recipients.split(',')]
+                return [email for email in emails if email]
+            return []
+        
+        return []
+
+
+class EmailLog(models.Model):
+    """Log individual email sends"""
+    broadcast = models.ForeignKey(BroadcastEmail, on_delete=models.CASCADE, related_name='email_logs')
+    recipient_email = models.EmailField()
+    sent_at = models.DateTimeField(auto_now_add=True)
+    success = models.BooleanField(default=True)
+    error_message = models.TextField(blank=True)
+    
+    class Meta:
+        ordering = ['-sent_at']
+    
+    def __str__(self):
+        status = "✓" if self.success else "✗"
+        return f"{status} {self.recipient_email} - {self.broadcast.title}"
+
+
 class UserProfile(models.Model):
     EDUCATION_CHOICES = [
         ('high_school', 'High School'),

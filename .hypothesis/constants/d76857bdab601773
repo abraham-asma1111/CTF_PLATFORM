@@ -1,0 +1,4 @@
+# file: /usr/lib/python3/dist-packages/django/db/migrations/recorder.py
+# hypothesis_version: 6.148.7
+
+[255, 'Migration %s for %s', 'django_migrations', 'migrations']

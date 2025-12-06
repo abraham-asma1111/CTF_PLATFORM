@@ -1,0 +1,4 @@
+# file: /home/abraham/Desktop/ CTF2/submissions/admin.py
+# hypothesis_version: 6.148.7
+
+['challenge', 'challenge__category', 'challenge__title', 'is_correct', 'timestamp', 'user', 'user__username']

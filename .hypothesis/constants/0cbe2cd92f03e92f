@@ -1,0 +1,4 @@
+# file: /usr/lib/python3/dist-packages/django/views/generic/__init__.py
+# hypothesis_version: 6.148.7
+
+['ArchiveIndexView', 'CreateView', 'DateDetailView', 'DayArchiveView', 'DeleteView', 'DetailView', 'FormView', 'GenericViewError', 'ListView', 'MonthArchiveView', 'RedirectView', 'TemplateView', 'TodayArchiveView', 'UpdateView', 'View', 'WeekArchiveView', 'YearArchiveView']

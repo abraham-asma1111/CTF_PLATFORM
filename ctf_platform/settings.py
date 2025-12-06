@@ -48,7 +48,6 @@ INSTALLED_APPS = [
     'submissions',
     'leaderboard',
     'teams',
-    'chat',
 ]
 
 MIDDLEWARE = [
@@ -75,7 +74,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'ctf_platform.context_processors.footer_stats',
-                'chat.context_processors.chat_notifications',
+                'ctf_platform.context_processors.group_event_info',
             ],
         },
     },
@@ -122,7 +121,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Africa/Nairobi'
 
 USE_I18N = True
 

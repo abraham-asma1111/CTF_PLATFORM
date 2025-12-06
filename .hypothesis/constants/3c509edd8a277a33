@@ -1,0 +1,4 @@
+# file: /home/abraham/Desktop/ CTF2/submissions/models.py
+# hypothesis_version: 6.148.7
+
+[200, '-timestamp', 'submissions', 'teams.Team']

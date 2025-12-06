@@ -8,10 +8,97 @@
 
 {% block content %}
 <div class="container mt-5">
-  <div class="row mb-4">
+  <!-- Group Event Information Section -->
+  {% if is_group_mode_active and group_event_details %}
+  <div class="group-event-info-section">
+    <div class="group-event-header">
+      <div class="event-icon">🏆</div>
+      <div class="event-details">
+        <h2 class="event-name">{{ group_event_details.name }}</h2>
+        <p class="event-description">{{ group_event_details.description }}</p>
+      </div>
+      <div class="event-status">
+        <span class="status-badge active">🔴 LIVE</span>
+      </div>
+    </div>
+    
+    <div class="group-event-stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">🎯</div>
+        <div class="stat-content">
+          <div class="stat-number">{{ group_event_details.total_challenges }}</div>
+          <div class="stat-label">Group Challenges</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">👥</div>
+        <div class="stat-content">
+          <div class="stat-number">{{ group_event_details.total_teams }}</div>
+          <div class="stat-label">Teams Competing</div>
+        </div>
+      </div>
+      {% if group_event_details.point_multiplier != 1.0 %}
+      <div class="stat-card">
+        <div class="stat-icon">⚡</div>
+        <div class="stat-content">
+          <div class="stat-number">{{ group_event_details.point_multiplier }}x</div>
+          <div class="stat-label">Points Multiplier</div>
+        </div>
+      </div>
+      {% endif %}
+      {% if group_event_details.max_teams %}
+      <div class="stat-card">
+        <div class="stat-icon">🏁</div>
+        <div class="stat-content">
+          <div class="stat-number">{{ group_event_details.max_teams }}</div>
+          <div class="stat-label">Max Teams</div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    {% if not user_team %}
+    <div class="participation-prompt">
+      <div class="prompt-content">
+        <h3>🚀 Ready to Compete?</h3>
+        <p>Join or create a team to participate in the group competition and access exclusive group challenges!</p>
+        <div class="prompt-actions">
+          <a href="#teams-section" class="btn-prompt primary" onclick="scrollToTeams()">
+            <i class="icon">👥</i>
+            Browse Teams
+          </a>
+          <a href="{% url 'teams:create_team' %}" class="btn-prompt secondary">
+            <i class="icon">➕</i>
+            Create New Team
+          </a>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <div class="team-status-info">
+      <div class="status-content">
+        <h3>✅ You're Ready to Compete!</h3>
+        <p>You're part of <strong>{{ user_team.name }}</strong>. Access group challenges and compete with your team!</p>
+        <a href="{% url 'teams:my_team' %}" class="btn-prompt primary">
+          <i class="icon">🛡️</i>
+          Go to Team Dashboard
+        </a>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <div class="row mb-4" id="teams-section">
     <div class="col-md-8">
       <h2 class="text-primary">🛡️ Teams</h2>
-      <p class="text-muted">Join a team or create your own to compete together</p>
+      <p class="text-muted">
+        {% if is_group_mode_active %}
+          Join a team to participate in the active group competition
+        {% else %}
+          Join a team or create your own to compete together
+        {% endif %}
+      </p>
     </div>
     <div class="col-md-4">
       <div class="team-nav-buttons">
@@ -173,5 +260,13 @@
       }
     });
   });
+
+  // Smooth scroll to teams section
+  function scrollToTeams() {
+    document.getElementById('teams-section').scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    });
+  }
 </script>
 {% endblock %}

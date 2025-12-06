@@ -7,6 +7,24 @@
   <div class="card-header">
     <h1 class="card-title">🎯 Challenges</h1>
     <p>Choose your challenge and capture the flag!</p>
+    
+    <!-- Optional Participation Notice for Group Events -->
+    {% if is_group_mode_active and group_event_details %}
+    <div class="group-participation-notice">
+      <div class="notice-content">
+        <div class="notice-icon">🏆</div>
+        <div class="notice-text">
+          <strong>{{ group_event_details.name }}</strong> is currently active! 
+          {% if user_team %}
+            <a href="{% url 'teams:my_team' %}" class="notice-link">Access group challenges in your team section</a>
+          {% else %}
+            <a href="{% url 'teams:team_list' %}" class="notice-link">Join a team to participate</a>
+          {% endif %}
+          or continue with individual challenges below.
+        </div>
+      </div>
+    </div>
+    {% endif %}
   </div>
 </div>
 
@@ -32,7 +50,17 @@
   <div class="challenge-card" data-category="{{ challenge.category }}">
     <div class="challenge-meta">
       <span class="difficulty-badge difficulty-{{ challenge.difficulty }}">{{ challenge.get_difficulty_display }}</span>
-      <span class="points-badge">{{ challenge.points }} pts</span>
+      {% if challenge.challenge_type == 'team' %}
+      <span class="team-badge">👥 Team Only</span>
+      {% elif challenge.challenge_type == 'individual' %}
+      <span class="individual-badge">👤 Individual</span>
+      {% endif %}
+      <span class="points-badge">
+        {{ challenge.points }} pts
+        {% if challenge.team_points_multiplier != 1.0 %}
+        <small>(×{{ challenge.team_points_multiplier }} for teams)</small>
+        {% endif %}
+      </span>
       {% if challenge.id in user_solved %}
       <span class="solved-badge">✓ Solved</span>
       {% endif %}

@@ -1,0 +1,4 @@
+# file: /home/abraham/Desktop/ CTF2/users/migrations/0002_userprofile_department_userprofile_education_level_and_more.py
+# hypothesis_version: 6.148.7
+
+['0001_initial', 'Computer Science', 'Cyber Security', 'Female', 'High School', 'Male', 'Other', 'Postgraduate', 'Software Engineering', 'Undergraduate', 'computer_science', 'cyber_security', 'department', 'education_level', 'female', 'high_school', 'it', 'male', 'other', 'postgraduate', 'sex', 'software_engineering', 'undergraduate', 'userprofile', 'users']

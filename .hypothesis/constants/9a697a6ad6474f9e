@@ -1,0 +1,4 @@
+# file: /usr/lib/python3/dist-packages/django/db/migrations/operations/__init__.py
+# hypothesis_version: 6.148.7
+
+['AddConstraint', 'AddField', 'AddIndex', 'AlterField', 'AlterIndexTogether', 'AlterModelManagers', 'AlterModelOptions', 'AlterModelTable', 'AlterUniqueTogether', 'CreateModel', 'DeleteModel', 'RemoveConstraint', 'RemoveField', 'RemoveIndex', 'RenameField', 'RenameIndex', 'RenameModel', 'RunPython', 'RunSQL']

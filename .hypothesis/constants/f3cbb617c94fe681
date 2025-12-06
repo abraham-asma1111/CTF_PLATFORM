@@ -1,0 +1,4 @@
+# file: /usr/lib/python3/dist-packages/django/middleware/security.py
+# hypothesis_version: 6.148.7
+
+[',', '/', '; includeSubDomains', '; preload', 'Referrer-Policy', 'https://%s%s', 'max-age=%s', 'nosniff']
