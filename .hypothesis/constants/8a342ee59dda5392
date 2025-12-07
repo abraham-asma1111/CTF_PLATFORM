@@ -1,4 +1,0 @@
-# file: /home/abraham/Desktop/ CTF2/submissions/migrations/0002_alter_submission_unique_together_submission_team.py
-# hypothesis_version: 6.148.7
-
-['0001_initial', 'submission', 'submissions', 'team', 'teams', 'teams.team']

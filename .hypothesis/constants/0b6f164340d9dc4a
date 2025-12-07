@@ -1,4 +1,0 @@
-# file: /usr/lib/python3/dist-packages/sqlparse/formatter.py
-# hypothesis_version: 6.148.7
-
-['[...]', 'capitalize', 'comma_first', 'compact', 'identifier_case', 'indent_after_first', 'indent_char', 'indent_columns', 'indent_tabs', 'indent_width', 'keyword_case', 'lower', 'output_format', 'php', 'python', 'reindent', 'reindent_aligned', 'right_margin', 'sql', 'strip_comments', 'strip_whitespace', 'truncate_char', 'truncate_strings', 'upper', 'wrap_after']

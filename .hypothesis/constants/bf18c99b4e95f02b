@@ -1,4 +1,0 @@
-# file: /usr/lib/python3/dist-packages/django/core/cache/backends/db.py
-# hypothesis_version: 6.148.7
-
-['%s', ', ', 'CacheEntry', 'DELETE FROM %s', 'add', 'cache entries', 'cache entry', 'cache_key', 'cacheentry', 'django_cache', 'expires', 'latin1', 'set', 'touch', 'value']

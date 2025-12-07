@@ -18,7 +18,10 @@
         <p class="event-description">{{ group_event_details.description }}</p>
       </div>
       <div class="event-status">
-        <span class="status-badge active">🔴 LIVE</span>
+        <span class="status-badge active" id="liveIndicatorTeamList" style="display: none;">
+          <span class="live-dot"></span>
+          LIVE
+        </span>
       </div>
     </div>
     
@@ -268,5 +271,81 @@
       block: 'start'
     });
   }
+
+  // LIVE Indicator Control for Team List
+  {% if is_group_mode_active and group_event_details %}
+  (function() {
+    const eventStartTime = new Date("{{ group_event_details.start_time.isoformat }}");
+    const eventEndTime = new Date("{{ group_event_details.end_time.isoformat }}");
+    const liveIndicator = document.getElementById('liveIndicatorTeamList');
+    
+    function updateLiveStatus() {
+      const now = new Date();
+      
+      // Show LIVE indicator only when event is actually running
+      if (now >= eventStartTime && now <= eventEndTime) {
+        if (liveIndicator) {
+          liveIndicator.style.display = 'inline-flex';
+        }
+      } else {
+        if (liveIndicator) {
+          liveIndicator.style.display = 'none';
+        }
+      }
+    }
+    
+    // Update immediately
+    updateLiveStatus();
+    
+    // Update every second
+    setInterval(updateLiveStatus, 1000);
+  })();
+  {% endif %}
 </script>
+
+<style>
+/* LIVE Indicator Styles */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ff0000;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+  animation: livePulse 2s ease-in-out infinite;
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.6);
+}
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  background: #fff;
+  border-radius: 50%;
+  animation: dotPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes livePulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(255, 0, 0, 0.9);
+  }
+}
+
+@keyframes dotPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.8);
+  }
+}
+</style>
 {% endblock %}

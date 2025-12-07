@@ -1,4 +1,0 @@
-# file: /usr/lib/python3/dist-packages/django/contrib/contenttypes/admin.py
-# hypothesis_version: 6.148.7
-
-['_meta', 'admin.E301', 'admin.E302', 'admin.E303', 'admin.E304', 'can_delete', 'can_order', 'content_type', 'ct_field', 'exclude', 'extra', 'fields', 'fk_field', 'form', 'formfield_callback', 'formset', 'max_num', 'min_num', 'object_id']

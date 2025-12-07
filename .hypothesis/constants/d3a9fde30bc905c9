@@ -1,4 +1,0 @@
-# file: /home/abraham/Desktop/ CTF2/challenges/migrations/0003_hint_hintview.py
-# hypothesis_version: 6.148.7
-
-['-viewed_at', 'Hint', 'HintView', 'ID', 'The hint text', 'challenge', 'challenges', 'challenges.challenge', 'challenges.hint', 'content', 'cost', 'created_at', 'hint', 'hints', 'id', 'order', 'ordering', 'points_deducted', 'unique_together', 'user', 'viewed_at']

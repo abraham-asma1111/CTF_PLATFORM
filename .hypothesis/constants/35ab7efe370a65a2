@@ -1,4 +1,0 @@
-# file: /usr/lib/python3/dist-packages/django/contrib/admin/actions.py
-# hypothesis_version: 6.148.7
-
-['Are you sure?', 'action_checkbox_name', 'count', 'deletable_objects', 'delete', 'items', 'media', 'model_count', 'name', 'objects_name', 'opts', 'perms_lacking', 'post', 'protected', 'queryset', 'subtitle', 'title']

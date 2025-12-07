@@ -1,4 +1,0 @@
-# file: /home/abraham/Desktop/ CTF2/teams/urls.py
-# hypothesis_version: 6.148.7
-
-['<int:team_id>/', '<int:team_id>/join/', 'accept_invitation', 'approve_member', 'cancel-request/', 'cancel_invitation', 'cancel_join_request', 'create/', 'create_team', 'decline_invitation', 'group-challenges/', 'group_challenges', 'join_team', 'leaderboard/', 'leave/', 'leave_team', 'my-invitations/', 'my-team/', 'my_invitations', 'my_team', 'reject_member', 'remove_member', 'send_invitation', 'submit_group_flag', 'team_detail', 'team_leaderboard', 'team_list', 'team_management', 'teams', 'transfer_captaincy']

@@ -1,4 +1,0 @@
-# file: /home/abraham/Desktop/ CTF2/challenges/jwt_challenge.py
-# hypothesis_version: 6.148.7
-
-[3600, 'Correct! Well done!', 'POST', 'challenge', 'challenge_id', 'flag', 'jwt_challenge_home', 'message', 'secret_data', 'super_secret_key_123']

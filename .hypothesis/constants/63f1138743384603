@@ -1,4 +1,0 @@
-# file: /usr/lib/python3/dist-packages/django/contrib/auth/management/__init__.py
-# hypothesis_version: 6.148.7
-
-['Can %s %s', 'ContentType', 'NFKD', 'Permission', 'ascii', 'auth', 'codename', 'content_type', 'contenttypes', 'ignore', 'username']

@@ -1,4 +1,0 @@
-# file: /home/abraham/Desktop/ CTF2/users/migrations/0005_userprofile_bio_userprofile_profile_photo.py
-# hypothesis_version: 6.148.7
-
-[500, 'bio', 'profile_photo', 'profile_photos/', 'userprofile', 'users']

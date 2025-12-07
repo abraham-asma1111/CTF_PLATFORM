@@ -1,4 +1,0 @@
-# file: /home/abraham/Desktop/ CTF2/challenges/server_flags.py
-# hypothesis_version: 6.148.7
-
-[256, '*', '*\n!.gitignore\n', '.', '.git', '.gitignore', 'HEAD', 'app.py', 'backup', 'backup.txt.bak', 'database', 'env', 'file', 'flag.txt', 'git', 'hidden', 'logs', 'server_flags', 'source']

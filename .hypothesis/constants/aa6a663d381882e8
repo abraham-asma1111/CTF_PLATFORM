@@ -1,4 +1,0 @@
-# file: /usr/lib/python3/dist-packages/django/contrib/contenttypes/views.py
-# hypothesis_version: 6.148.7
-
-['%s://%s%s', '//', 'ct_id', 'ct_name', 'django.contrib.sites', 'http://', 'https://', 'obj_id', 'sites.Site']

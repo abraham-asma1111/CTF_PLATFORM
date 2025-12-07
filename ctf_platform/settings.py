@@ -36,13 +36,16 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', '10.161.170.159']
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',  # Must be first for WebSocket support
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'channels',  # WebSocket support
     'django_recaptcha',
+    'ctf_platform',
     'users',
     'challenges',
     'submissions',
@@ -198,3 +201,18 @@ SILENCED_SYSTEM_CHECKS = ['django_recaptcha.recaptcha_test_key_error']  # Only f
 # For mobile testing - bypass reCAPTCHA verification (REMOVE IN PRODUCTION!)
 # Uncomment the line below to disable reCAPTCHA verification for testing
 # RECAPTCHA_DISABLE = True
+
+
+# Channels Configuration for WebSocket Support
+ASGI_APPLICATION = 'ctf_platform.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer'  # For development
+        # For production, use Redis:
+        # 'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        # 'CONFIG': {
+        #     "hosts": [('127.0.0.1', 6379)],
+        # },
+    },
+}

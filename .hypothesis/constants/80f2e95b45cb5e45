@@ -1,4 +1,0 @@
-# file: /usr/lib/python3/dist-packages/django/http/__init__.py
-# hypothesis_version: 6.148.7
-
-['BadHeaderError', 'FileResponse', 'Http404', 'HttpHeaders', 'HttpRequest', 'HttpResponse', 'HttpResponseBase', 'HttpResponseGone', 'HttpResponseNotFound', 'HttpResponseRedirect', 'JsonResponse', 'QueryDict', 'RawPostDataException', 'SimpleCookie', 'UnreadablePostError', 'parse_cookie']

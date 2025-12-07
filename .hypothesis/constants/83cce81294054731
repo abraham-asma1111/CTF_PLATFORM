@@ -1,4 +1,0 @@
-# file: /usr/lib/python3/dist-packages/django/contrib/messages/storage/base.py
-# hypothesis_version: 6.148.7
-
-['MESSAGE_LEVEL', '_level', '_loaded_data']

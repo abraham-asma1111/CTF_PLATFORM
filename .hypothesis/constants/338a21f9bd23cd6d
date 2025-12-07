@@ -1,4 +1,0 @@
-# file: /usr/lib/python3/dist-packages/django/db/backends/sqlite3/features.py
-# hypothesis_version: 6.148.7
-
-[999, 'AutoField', 'BigAutoField', 'BigIntegerField', 'CharField', 'DurationField', 'SmallAutoField', 'binary', 'ci', 'cs', 'nocase', 'non_default', 'supports_json_field']

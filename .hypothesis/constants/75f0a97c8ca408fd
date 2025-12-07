@@ -1,4 +1,0 @@
-# file: /home/abraham/Desktop/ CTF2/challenges/migrations/0005_groupchallenge_groupevent_platformmode_and_more.py
-# hypothesis_version: 6.148.7
-
-[1.0, 100, 200, 255, 'Group Mode', 'GroupChallenge', 'GroupEvent', 'GroupSubmission', 'ID', 'Individual Mode', 'PlatformMode', 'active_event', 'category', 'challenge', 'challenges', 'changed_at', 'changed_by', 'created_at', 'created_by', 'db_table', 'description', 'difficulty', 'end_time', 'event', 'flag', 'flag_submitted', 'group', 'group_challenges', 'group_events', 'group_submissions', 'groupchallenge', 'id', 'individual', 'is_active', 'is_correct', 'max_teams', 'mode', 'name', 'platform_mode', 'point_multiplier', 'points', 'points_awarded', 'start_time', 'submitted_at', 'submitted_by', 'team', 'teams', 'teams.team', 'title']

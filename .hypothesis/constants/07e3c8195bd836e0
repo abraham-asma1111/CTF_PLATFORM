@@ -1,4 +1,0 @@
-# file: /usr/lib/python3/dist-packages/dotenv/main.py
-# hypothesis_version: 6.148.7
-
-["'", "'{}'", '.env', 'File not found', "\\'", '__file__', '__main__', 'always', 'auto', 'frozen', 'never', 'os.PathLike[str]', 'utf-8', 'w']

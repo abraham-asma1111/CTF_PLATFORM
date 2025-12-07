@@ -3,10 +3,52 @@
 {% block title %}Leaderboard - CTF Platform{% endblock %}
 
 {% block content %}
+<!-- Group Event Leaderboard (shown when group mode is active) -->
+{% if is_group_mode and group_leaderboard %}
 <div class="card">
   <div class="card-header">
-    <h1 class="card-title">🏆 Leaderboard</h1>
-    <p>Top performers in the CTF competition</p>
+    <h1 class="card-title">🏆 Group Event Leaderboard</h1>
+    <p>Team rankings for the active group event</p>
+  </div>
+
+  <table class="leaderboard-table" id="group-leaderboard-table">
+    <thead>
+      <tr>
+        <th>Rank</th>
+        <th>Team Name</th>
+        <th>Captain</th>
+        <th>Event Score</th>
+        <th>Challenges Solved</th>
+        <th>Members</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for team_data in group_leaderboard %}
+      <tr>
+        <td>
+          {% if forloop.counter == 1 %}🥇
+          {% elif forloop.counter == 2 %}🥈
+          {% elif forloop.counter == 3 %}🥉
+          {% else %}{{ forloop.counter }}
+          {% endif %}
+        </td>
+        <td><strong>{{ team_data.team.name }}</strong></td>
+        <td>{{ team_data.team.captain.username }}</td>
+        <td><strong>{{ team_data.event_score }}</strong></td>
+        <td>{{ team_data.event_challenges_solved }}</td>
+        <td>{{ team_data.team.member_count }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+<!-- Individual Leaderboard -->
+<div class="card">
+  <div class="card-header">
+    <h1 class="card-title">🏆 {% if is_group_mode %}Individual {% endif %}Leaderboard</h1>
+    <p>Top performers in {% if is_group_mode %}individual {% endif %}CTF challenges</p>
   </div>
 
   {% if top_users %}

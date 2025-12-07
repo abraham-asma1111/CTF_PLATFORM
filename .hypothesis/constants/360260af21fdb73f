@@ -1,4 +1,0 @@
-# file: /home/abraham/Desktop/ CTF2/leaderboard/views.py
-# hypothesis_version: 6.148.7
-
-[400, '-total_score', 'captain', 'challenges_solved', 'error', 'event_score', 'group_leaderboard', 'is_group_mode', 'last_submission', 'leaderboard', 'member_count', 'rank', 'score', 'team', 'team_name', 'top_users', 'user', 'username']

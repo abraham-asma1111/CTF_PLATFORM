@@ -1,4 +1,0 @@
-# file: /usr/lib/python3/dist-packages/django/contrib/admin/views/autocomplete.py
-# hypothesis_version: 6.148.7
-
-['app_label', 'field_name', 'id', 'model_name', 'more', 'object_list', 'page_obj', 'pagination', 'results', 'term', 'text']

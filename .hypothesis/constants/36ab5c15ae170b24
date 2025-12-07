@@ -1,4 +1,0 @@
-# file: /home/abraham/Desktop/ CTF2/teams/admin.py
-# hypothesis_version: 6.148.7
-
-['can_compete', 'captain', 'captain__username', 'challenges_solved', 'created_at', 'from_user', 'is_active', 'joined_at', 'member_count', 'name', 'status', 'team', 'team__name', 'to_user', 'to_user__username', 'total_score', 'user', 'user__username']

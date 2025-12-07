@@ -208,7 +208,7 @@ class GroupEventAdmin(admin.ModelAdmin):
         }),
         ('Event Schedule', {
             'fields': ('start_time', 'end_time'),
-            'description': 'Set the event time range. Events cannot overlap.'
+            'description': '⏰ Enter times in East Africa Time (EAT/UTC+3). Example: If you want the event to start at 2:00 PM EAT, enter "14:00". The system will automatically handle timezone conversion.'
         }),
         ('Event Settings', {
             'fields': ('point_multiplier', 'max_teams'),
@@ -362,6 +362,10 @@ class GroupEventAdmin(admin.ModelAdmin):
                 platform_mode.changed_by = request.user
                 platform_mode.save()
             
+            # Broadcast event activation via WebSocket
+            from ctf_platform.websocket_utils import broadcast_event_activated
+            broadcast_event_activated(event)
+            
             self.message_user(request, f'Event "{event.name}" activated! Platform is now in group mode.', messages.SUCCESS)
     
     activate_event.short_description = '🟢 Activate selected event (group mode)'
@@ -378,6 +382,10 @@ class GroupEventAdmin(admin.ModelAdmin):
                 platform_mode.active_event = None
                 platform_mode.changed_by = request.user
                 platform_mode.save()
+                
+                # Broadcast event deactivation via WebSocket
+                from ctf_platform.websocket_utils import broadcast_event_deactivated
+                broadcast_event_deactivated()
                 
                 self.message_user(request, f'{updated} event(s) deactivated! Platform returned to individual mode.', messages.INFO)
             else:

@@ -1,4 +1,0 @@
-# file: /usr/lib/python3/dist-packages/django/middleware/cache.py
-# hypothesis_version: 6.148.7
-
-[200, 304, 'Cache-Control', 'Cookie', 'GET', 'HEAD', '_cache_update_cache', 'cache_alias', 'key_prefix', 'private', 'render']

@@ -1,4 +1,0 @@
-# file: /home/abraham/Desktop/ CTF2/challenges/urls.py
-# hypothesis_version: 6.148.7
-
-['<int:challenge_id>/', 'admin_detail', 'challenges', 'detail', 'download', 'jwt_home', 'jwt_secret', 'list', 'sqli_hints', 'sqli_home', 'sqli_login', 'sqli_reset', 'sqli_source', 'submit', 'view_hint', 'vuln_cmd_injection', 'vuln_dir_listing', 'vuln_file_download', 'vuln_file_read', 'vuln_info', 'vuln_robots', 'vuln_sql', 'vuln_xxe']

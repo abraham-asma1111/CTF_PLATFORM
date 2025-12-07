@@ -1,4 +1,0 @@
-# file: /home/abraham/Desktop/ CTF2/users/migrations/0003_userprofile_email_verified_and_more.py
-# hypothesis_version: 6.148.7
-
-['email_verified', 'userprofile', 'users', 'verification_code']

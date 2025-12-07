@@ -1,4 +1,0 @@
-# file: /usr/lib/python3/dist-packages/django/template/defaultfilters.py
-# hypothesis_version: 6.148.7
-
-[200, ' …', '"', '%', '%(size)d byte', '%(size)d bytes', '%0', '%d', '%s GB', '%s KB', '%s MB', '%s PB', '%s TB', '%s<li>%s%s</li>', "'", "([a-z])'([A-Z])", ',', '-', '-%s', '.', '0', ':', ';', '<br>', '\\', '\\"', "\\'", '\\\\', '\\d([A-Z])', '_', 'd. %s', 'escape', 'escapejs', 'g', 'gu', 'is_safe', 'linebreaks', 'phone2numeric', 's', 'safe', 'size', 'slice', 'timesince', 'timeuntil', 'u', 'ug', 'yes,no,maybe']

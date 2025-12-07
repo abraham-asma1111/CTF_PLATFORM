@@ -13,7 +13,15 @@
 <body class="{% block body_class %}{% endblock %}">
   <nav class="navbar">
     <div class="nav-container">
-      <a href="{% url 'home' %}" class="nav-brand">🚩 CTF Platform</a>
+      <a href="{% url 'home' %}" class="nav-brand">
+        🚩 CTF Platform
+        {% if is_group_mode_active and group_event_details %}
+        <span class="live-indicator-nav" id="liveIndicatorNav" style="display: none;">
+          <span class="live-dot-nav"></span>
+          LIVE
+        </span>
+        {% endif %}
+      </a>
       <ul class="nav-menu">
         <li><a href="{% url 'home' %}">Home</a></li>
         <li><a href="{% url 'challenges:list' %}">Challenges</a></li>
@@ -48,7 +56,13 @@
       <div class="group-event-content">
         <div class="group-event-icon">🏆</div>
         <div class="group-event-info">
-          <h3 class="group-event-title">{{ group_event_details.name }}</h3>
+          <h3 class="group-event-title">
+            {{ group_event_details.name }}
+            <span class="live-indicator" id="liveIndicator" style="display: none;">
+              <span class="live-dot"></span>
+              LIVE
+            </span>
+          </h3>
           <p class="group-event-description">{{ group_event_details.description }}</p>
           <div class="group-event-stats">
             <span class="stat-item">
@@ -186,16 +200,6 @@
             <a href="#" onclick="alert('Privacy Policy Coming Soon!'); return false;">Privacy Policy</a>
             <span class="separator">•</span>
             <a href="#" onclick="alert('Terms of Service Coming Soon!'); return false;">Terms of Service</a>
-            <span class="separator">•</span>
-            <a href="#" onclick="alert('Cookie Policy Coming Soon!'); return false;">Cookie Policy</a>
-          </div>
-        </div>
-        <div class="footer-timezone">
-          {% load timezone_tags %}
-          <div class="timezone-info">
-            <span class="timezone-icon">🕐</span>
-            <span class="timezone-text">All times shown in East Africa Time (EAT, UTC+3)</span>
-            <span class="current-time">Current time: {% current_nairobi_time|date:"Y-m-d H:i:s" %} EAT</span>
           </div>
         </div>
       </div>
@@ -233,6 +237,43 @@
         localStorage.setItem('groupEventBannerDismissed', 'true');
       }
     }
+
+    // LIVE Indicator Control (No WebSocket Required)
+    {% if is_group_mode_active and group_event_details %}
+    (function() {
+      const eventStartTime = new Date("{{ group_event_details.start_time.isoformat }}");
+      const eventEndTime = new Date("{{ group_event_details.end_time.isoformat }}");
+      const liveIndicator = document.getElementById('liveIndicator');
+      const liveIndicatorNav = document.getElementById('liveIndicatorNav');
+      
+      function updateLiveStatus() {
+        const now = new Date();
+        
+        // Show LIVE indicator only when event is actually running
+        if (now >= eventStartTime && now <= eventEndTime) {
+          if (liveIndicator) {
+            liveIndicator.style.display = 'inline-flex';
+          }
+          if (liveIndicatorNav) {
+            liveIndicatorNav.style.display = 'inline-flex';
+          }
+        } else {
+          if (liveIndicator) {
+            liveIndicator.style.display = 'none';
+          }
+          if (liveIndicatorNav) {
+            liveIndicatorNav.style.display = 'none';
+          }
+        }
+      }
+      
+      // Update immediately
+      updateLiveStatus();
+      
+      // Update every second for smooth countdown
+      setInterval(updateLiveStatus, 1000);
+    })();
+    {% endif %}
 
     // Check if banner was previously dismissed
     document.addEventListener('DOMContentLoaded', function() {

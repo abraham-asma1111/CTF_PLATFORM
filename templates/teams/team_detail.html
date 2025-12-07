@@ -14,7 +14,13 @@
     <div class="event-banner-content">
       <div class="event-icon">🏆</div>
       <div class="event-info">
-        <h3>{{ group_event_details.name }} - Active Competition</h3>
+        <h3>
+          {{ group_event_details.name }} - Active Competition
+          <span class="live-indicator-detail" id="liveIndicatorDetail" style="display: none;">
+            <span class="live-dot"></span>
+            LIVE
+          </span>
+        </h3>
         <p>{{ group_event_details.description }}</p>
         {% if is_member %}
         <div class="team-event-stats">
@@ -719,5 +725,82 @@
     justify-content: center;
   }
 }
+
+/* LIVE Indicator for Team Detail */
+.live-indicator-detail {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ff0000;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 15px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+  animation: livePulse 2s ease-in-out infinite;
+  box-shadow: 0 0 15px rgba(255, 0, 0, 0.6);
+  margin-left: 15px;
+}
+
+.live-indicator-detail .live-dot {
+  width: 6px;
+  height: 6px;
+  background: #fff;
+  border-radius: 50%;
+  animation: dotPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes livePulse {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(255, 0, 0, 0.9);
+  }
+}
+
+@keyframes dotPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.8);
+  }
+}
 </style>
+
+<script>
+// LIVE Indicator Control for Team Detail
+{% if is_group_mode_active and group_event_details %}
+(function() {
+  const eventStartTime = new Date("{{ group_event_details.start_time.isoformat }}");
+  const eventEndTime = new Date("{{ group_event_details.end_time.isoformat }}");
+  const liveIndicator = document.getElementById('liveIndicatorDetail');
+  
+  function updateLiveStatus() {
+    const now = new Date();
+    
+    // Show LIVE indicator only when event is actually running
+    if (now >= eventStartTime && now <= eventEndTime) {
+      if (liveIndicator) {
+        liveIndicator.style.display = 'inline-flex';
+      }
+    } else {
+      if (liveIndicator) {
+        liveIndicator.style.display = 'none';
+      }
+    }
+  }
+  
+  // Update immediately
+  updateLiveStatus();
+  
+  // Update every second
+  setInterval(updateLiveStatus, 1000);
+})();
+{% endif %}
+</script>
 {% endblock %}

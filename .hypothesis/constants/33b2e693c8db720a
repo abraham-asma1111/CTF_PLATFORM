@@ -1,4 +1,0 @@
-# file: /home/abraham/Desktop/ CTF2/ctf_platform/urls.py
-# hypothesis_version: 6.148.7
-
-['admin/', 'challenges.urls', 'challenges/', 'home', 'leaderboard.urls', 'leaderboard/', 'teams.urls', 'teams/', 'users.urls', 'users/']

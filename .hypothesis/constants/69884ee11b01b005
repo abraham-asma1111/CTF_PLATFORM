@@ -1,4 +1,0 @@
-# file: /usr/lib/python3/dist-packages/django/views/static.py
-# hypothesis_version: 6.148.7
-
-['.', '/', 'Content-Encoding', 'Last-Modified', 'directory', 'file_list', 'i18n', 'path', 'rb']

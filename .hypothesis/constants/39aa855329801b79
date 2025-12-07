@@ -1,4 +1,0 @@
-# file: /usr/lib/python3/dist-packages/sqlparse/filters/reindent.py
-# hypothesis_version: 6.148.7
-
-[',', 'AND', 'BETWEEN', 'EXCEPT', 'FROM', 'GROUP BY', 'HAVING', 'JOIN$', 'LIMIT', 'OR', 'ORDER BY', 'SET', 'STRAIGHT_JOIN$', 'UNION', 'VALUES', 'WHEN ', 'WHERE', '_process_{cls}']

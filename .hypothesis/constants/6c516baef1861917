@@ -1,4 +1,0 @@
-# file: /home/abraham/Desktop/ CTF2/users/migrations/0007_broadcastemail_emaillog.py
-# hypothesis_version: 6.148.7
-
-[200, 254, '-created_at', '-sent_at', 'All Users', 'BroadcastEmail', 'Custom Recipients', 'Draft', 'Email subject line', 'EmailLog', 'Failed', 'ID', 'Sending', 'Sent', 'Team Captains Only', 'Team Members Only', 'Top 10 Users', 'all_users', 'broadcast', 'broadcast_emails', 'content', 'created_at', 'created_by', 'custom', 'custom_recipients', 'draft', 'email_logs', 'emails_failed', 'emails_sent', 'error_message', 'failed', 'id', 'individual_users', 'ordering', 'recipient_email', 'recipient_type', 'sending', 'sent', 'sent_at', 'status', 'success', 'team_captains', 'team_members', 'title', 'top_performers', 'total_recipients', 'users', 'users.broadcastemail']

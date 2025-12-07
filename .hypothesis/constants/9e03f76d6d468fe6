@@ -1,4 +1,0 @@
-# file: /usr/lib/python3/dist-packages/django/db/backends/sqlite3/creation.py
-# hypothesis_version: 6.148.7
-
-[':memory:', 'NAME', 'TEST', 'Tests cancelled.', 'fork', 'mode=memory', 'spawn', 'true', 'yes']

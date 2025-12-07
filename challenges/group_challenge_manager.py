@@ -123,6 +123,21 @@ class GroupChallengeManager:
             # Validate group challenge access
             TeamMembershipValidator.validate_group_challenge_access(user)
             
+            # CHECK IF EVENT TIME HAS EXPIRED
+            current_time = timezone.now()
+            if current_time > challenge.event.end_time:
+                return {
+                    'success': False,
+                    'message': 'Event has ended. Submissions are no longer accepted. Check the leaderboard for final results.'
+                }
+            
+            # Check if event has started
+            if current_time < challenge.event.start_time:
+                return {
+                    'success': False,
+                    'message': 'Event has not started yet. Please wait until the event begins.'
+                }
+            
             # Validate input
             if not flag_submitted or not flag_submitted.strip():
                 raise AccessDeniedError(['Flag cannot be empty'])
@@ -540,10 +555,9 @@ class GroupScoring:
     @staticmethod
     def update_team_score(team, points_awarded):
         """Update team score for group challenges (separate from regular scoring)"""
-        # This method updates team scores specifically for group events
-        # It's separate from regular challenge scoring to maintain independence
-        team.total_score += points_awarded
-        team.challenges_solved += 1
+        # Group event scores are calculated dynamically from GroupSubmission records
+        # We don't update team.total_score as that's for regular challenges only
+        # Just update the last_submission timestamp for tie-breaking
         team.last_submission = timezone.now()
         team.save()
         

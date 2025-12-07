@@ -1,4 +1,0 @@
-# file: /home/abraham/Desktop/ CTF2/ctf_platform/settings.py
-# hypothesis_version: 6.148.7
-
-[0.85, 587, '()', '/', '/media/', '/users/login/', '0.0.0.0', '10.161.170.159', '127.0.0.1', 'APP_DIRS', 'BACKEND', 'DEFAULT_FROM_EMAIL', 'DIRS', 'EMAIL_BACKEND', 'EMAIL_HOST', 'EMAIL_HOST_PASSWORD', 'EMAIL_HOST_USER', 'EMAIL_PORT', 'EMAIL_USE_TLS', 'ENGINE', 'GET /chat/', 'INFO', 'NAME', 'OPTIONS', 'POST /chat/', 'RECAPTCHA_PUBLIC_KEY', 'True', 'UTC', 'callback', 'challenges', 'class', 'console', 'context_processors', 'ctf_platform.urls', 'db.sqlite3', 'default', 'django.contrib.admin', 'django.contrib.auth', 'django.server', 'django_recaptcha', 'en-us', 'exclude_chat', 'filters', 'handlers', 'leaderboard', 'level', 'localhost', 'loggers', 'media', 'propagate', 'smtp.gmail.com', 'static', 'static/', 'submissions', 'teams', 'templates', 'timeout', 'users', 'version']

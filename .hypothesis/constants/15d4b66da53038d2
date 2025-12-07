@@ -1,4 +1,0 @@
-# file: /usr/lib/python3/dist-packages/django/template/loader_tags.py
-# hypothesis_version: 6.148.7
-
-['"', "'", '\'"', '../', './', '/', '<%s: extends %s>', '__include_context', 'block', 'block_context', 'context', 'endblock', 'endblock %s', 'extends', 'extends_context', 'include', 'only', 'render', 'template', 'with']

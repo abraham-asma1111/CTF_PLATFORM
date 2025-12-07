@@ -1,4 +1,0 @@
-# file: /usr/lib/python3/dist-packages/django/contrib/auth/base_user.py
-# hypothesis_version: 6.148.7
-
-[128, '@', 'NFKC', 'email', 'last login', 'password', 'sha256']

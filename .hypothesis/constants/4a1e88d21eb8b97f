@@ -1,4 +1,0 @@
-# file: /usr/lib/python3/dist-packages/django/contrib/admin/templatetags/log.py
-# hypothesis_version: 6.148.7
-
-['<GetAdminLog Node>', 'as', 'content_type', 'for_user', 'user']

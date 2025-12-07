@@ -288,6 +288,12 @@ class GroupChallenge(models.Model):
     max_attempts_per_team = models.IntegerField(default=10)
     created_at = models.DateTimeField(auto_now_add=True)
     
+    def save(self, *args, **kwargs):
+        """Hash the flag before saving"""
+        if self.flag and not self.flag.startswith('sha256:'):
+            self.flag = 'sha256:' + hashlib.sha256(self.flag.encode()).hexdigest()
+        super().save(*args, **kwargs)
+    
     class Meta:
         db_table = 'group_challenges'
     

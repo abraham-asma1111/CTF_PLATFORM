@@ -1,4 +1,0 @@
-# file: /home/abraham/Desktop/ CTF2/challenges/sql_injection_challenge.py
-# hypothesis_version: 6.148.7
-
-['9876-5432-1098', 'Advanced', 'Beginner', 'Expert', 'GET', 'I like pizza', 'Intermediate', 'N/A', 'POST', 'Welcome guest user', 'admin', 'admin@company.com', 'administrator', 'alice', 'alice2024', 'alice@company.com', 'api_key', 'backup_code', 'bob', 'bob@company.com', 'bob_pass', 'challenge_id', 'email', 'error', 'flag', 'guest', 'guest@company.com', 'hint', 'hints', 'id', 'john', 'john@company.com', 'level', 'note', 'password', 'password123', 'query', 'role', 'secret', 'server_flags', 'sk_live_abc123def456', 'source_code', 'success', 'title', 'user', 'username', 'users.db']

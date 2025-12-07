@@ -1,4 +1,0 @@
-# file: /usr/lib/python3/dist-packages/django/core/signing.py
-# hypothesis_version: 6.148.7
-
-[b'.', b'=', b'django.http.cookies', '%s%s%s', '%s.%s', ',', '-', '.', '0', ':', '^[A-z0-9-_=]*$', 'algorithm', 'django.core.signing', 'fallback_keys', 'key', 'latin-1', 'salt', 'sep', 'sha1', 'sha256', 'signer']

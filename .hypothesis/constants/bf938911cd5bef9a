@@ -1,4 +1,0 @@
-# file: /home/abraham/Desktop/ CTF2/challenges/views.py
-# hypothesis_version: 6.148.7
-
-[404, '2024-11-05', '2024-11-10', '2024-11-15', '2024-11-20', '2024-11-24', 'BLUE TEAM', 'CRYPTO TEAM', 'CYBER COMMAND', 'Content-Disposition', 'File not found', 'Flag cannot be empty', 'Hint revealed!', 'INTEL DIVISION', 'Invalid JSON data', 'POST', 'RED TEAM', 'accepted', 'author', 'blog_posts', 'both', 'categories', 'challenge', 'challenge_id', 'challenges', 'challenges/list.html', 'challenges:detail', 'challenges:list', 'correct_submissions', 'cost', 'date', 'error', 'excerpt', 'flag', 'hint', 'hint_id', 'hints', 'home.html', 'id', 'image', 'individual', 'message', 'new_score', 'points', 'points_deducted', 'rb', 'show_hints', 'success', 'team', 'team_name', 'title', 'total_challenges', 'total_submissions', 'user_solved', 'user_team', 'viewed_hints']

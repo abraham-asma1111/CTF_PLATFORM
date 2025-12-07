@@ -1,4 +1,0 @@
-# file: /usr/lib/python3/dist-packages/django/shortcuts.py
-# hypothesis_version: 6.148.7
-
-['.', '../', './', '/', '_default_manager', 'filter', 'get', 'get_absolute_url']

@@ -1,4 +1,0 @@
-# file: /usr/lib/python3/dist-packages/django/contrib/auth/views.py
-# hypothesis_version: 6.148.7
-
-['/', 'Enter new password', 'Logged out', 'Password change', 'Password reset', 'Password reset sent', 'email_template_name', 'extra_email_context', 'form', 'from_email', 'get', 'head', 'login_url', 'options', 'password_change_done', 'password_reset_done', 'post', 'request', 'set-password', 'site', 'site_name', 'subtitle', 'title', 'token', 'token_generator', 'uidb64', 'use_https', 'user', 'validlink']

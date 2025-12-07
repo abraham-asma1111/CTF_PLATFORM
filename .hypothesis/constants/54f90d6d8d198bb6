@@ -1,4 +1,0 @@
-# file: /usr/lib/python3/dist-packages/django/contrib/messages/constants.py
-# hypothesis_version: 6.148.7
-
-['DEBUG', 'ERROR', 'INFO', 'SUCCESS', 'WARNING', 'debug', 'error', 'info', 'success', 'warning']

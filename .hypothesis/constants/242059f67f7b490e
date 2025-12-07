@@ -1,4 +1,0 @@
-# file: /home/abraham/Desktop/ CTF2/teams/views.py
-# hypothesis_version: 6.148.7
-
-['-created_at', '-total_score', 'Email is required', 'Invalid JSON data', 'Invalid request', 'Invitation declined', 'POST', 'Team is full', 'Team is now full', 'You left the team', 'accepted', 'cancelled', 'description', 'email', 'from_user', 'has_pending_request', 'invitations', 'is_captain', 'is_member', 'last_submission', 'members', 'message', 'new_captain_id', 'pending', 'pending_requests', 'rejected', 'sent_invitations', 'success', 'team', 'team_id', 'team_name', 'teams', 'teams/team_list.html', 'teams:create_team', 'teams:team_detail', 'teams:team_list', 'to_user', 'user', 'user_membership']

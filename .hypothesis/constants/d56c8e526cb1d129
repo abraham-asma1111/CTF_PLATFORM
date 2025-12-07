@@ -1,4 +1,0 @@
-# file: /home/abraham/Desktop/ CTF2/challenges/migrations/0001_initial.py
-# hypothesis_version: 6.148.7
-
-[200, 'Binary Exploitation', 'Challenge', 'Cryptography', 'Easy', 'Forensics', 'Hard', 'ID', 'Medium', 'Miscellaneous', 'Reverse Engineering', 'Web', 'category', 'created_at', 'crypto', 'description', 'difficulty', 'easy', 'flag', 'forensics', 'hard', 'id', 'is_active', 'medium', 'misc', 'ordering', 'points', 'pwn', 'reverse', 'title', 'web']

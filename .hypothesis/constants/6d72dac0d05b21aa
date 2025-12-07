@@ -1,4 +1,0 @@
-# file: /usr/lib/python3/dist-packages/django/core/management/color.py
-# hypothesis_version: 6.148.7
-
-['ANSICON', 'Console', 'DJANGO_COLORS', 'TERM_PROGRAM', 'VirtualTerminalLevel', 'WT_SESSION', 'isatty', 'nocolor', 'vscode', 'win32']

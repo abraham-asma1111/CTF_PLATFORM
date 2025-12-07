@@ -1,4 +1,0 @@
-# file: /home/abraham/Desktop/ CTF2/submissions/migrations/0001_initial.py
-# hypothesis_version: 6.148.7
-
-[200, '-timestamp', '0001_initial', 'ID', 'Submission', 'challenge', 'challenges', 'challenges.challenge', 'id', 'is_correct', 'ordering', 'submitted_flag', 'timestamp', 'unique_together', 'user']

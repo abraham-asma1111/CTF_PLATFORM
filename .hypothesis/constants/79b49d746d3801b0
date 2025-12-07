@@ -1,4 +1,0 @@
-# file: /home/abraham/Desktop/ CTF2/teams/models.py
-# hypothesis_version: 6.148.7
-
-[100, 200, 500, '-created_at', '-joined_at', '-total_score', 'Accepted', 'Cancelled', 'Pending', 'Rejected', 'accepted', 'cancelled', 'captained_teams', 'invitations', 'last_submission', 'members', 'pending', 'received_invitations', 'rejected', 'sent_invitations', 'status', 'team', 'team_memberships', 'to_user', 'user']

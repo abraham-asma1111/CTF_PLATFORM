@@ -1,4 +1,0 @@
-# file: /home/abraham/Desktop/ CTF2/challenges/migrations/0004_challenge_challenge_type_challenge_max_team_size_and_more.py
-# hypothesis_version: 6.148.7
-
-[1.0, '0003_hint_hintview', 'Individual Challenge', 'Team Challenge', 'both', 'challenge', 'challenge_type', 'challenges', 'individual', 'max_team_size', 'min_team_size', 'team']
