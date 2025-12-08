@@ -27,6 +27,7 @@ urlpatterns = [
     path('challenges/', include('challenges.urls')),
     path('leaderboard/', include('leaderboard.urls')),
     path('teams/', include('teams.urls')),
+    path('chat/', include('chat.urls')),
 ]
 
 if settings.DEBUG:

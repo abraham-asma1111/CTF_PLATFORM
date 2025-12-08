@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'submissions',
     'leaderboard',
     'teams',
+    'chat',  # Team chat
 ]
 
 MIDDLEWARE = [

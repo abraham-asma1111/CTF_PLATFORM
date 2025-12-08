@@ -890,6 +890,8 @@ def group_challenges(request):
         'team_members': team_members,
         'challenge_categories': challenge_categories,
         'team_metrics': team_metrics,
+        # Chat features
+        'is_captain': team.captain == request.user,
     }
     return render(request, 'teams/group_challenges.html', context)
 

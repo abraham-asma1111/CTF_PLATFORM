@@ -15,6 +15,9 @@
     </div>
     <div class="col-md-4">
       <div class="team-nav-buttons">
+        <a href="{% url 'chat:team_chat' team.id %}" class="btn-team success" style="background: linear-gradient(135deg, #00ff88, #00dd77); color: #000; margin-bottom: 10px;">
+          💬 Team Chat
+        </a>
         <a href="{% url 'teams:team_detail' team.id %}" class="btn-team primary">
           <i class="fas fa-arrow-left"></i> Back to Team
         </a>
